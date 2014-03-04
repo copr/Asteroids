@@ -29,7 +29,7 @@ namespace GameTest2
         {
             Canvas.SetLeft(mImage, 200);
             Canvas.SetTop(mImage, 200);
-            Console.WriteLine("HOJ");
+            Console.WriteLine("HOJ svete");
         }
 
         private BitmapImage mBitmapImage;
