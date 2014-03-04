@@ -28,7 +28,8 @@ namespace GameTest2
         public void Notify(object[] args)
         {
             Canvas.SetLeft(mImage, 200);
-            Canvas.SetTop(mImage, 200);  
+            Canvas.SetTop(mImage, 200);
+            Console.WriteLine("HOJ");
         }
 
         private BitmapImage mBitmapImage;
