@@ -57,12 +57,18 @@ namespace GameTest2
                 x.Notify(null);
             }
         }
-  
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            mObjects.Add(new Asteroid(GameCanvas));
+        }
         
-        Rocket mRocket;
+        private Rocket mRocket;
 
         private List<INotifiable> mObjects;
         private Timer mTimer;
+
+       
     }
 }
 
