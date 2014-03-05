@@ -84,6 +84,7 @@
     <Compile Include="Asteroid.cs" />
     <Compile Include="INotifiable.cs" />
     <Compile Include="Rocket.cs" />
+    <Compile Include="Shot.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

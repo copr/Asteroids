@@ -130,11 +130,12 @@ namespace GameTest2
 
             mPosition.X += mHorizontalSpeed;
             mPosition.Y += mVerticalSpeed;
+
         }
 
         private BitmapImage mBitmapImage;
         private Image mImage = new Image();
-        private Point mPosition;
+        public Point mPosition;
 
         private Key mRightKey;
         private Key mLeftKey;
@@ -145,8 +146,8 @@ namespace GameTest2
         private double mAngleChangeSpeed = 4;
         private int mAngleChangeSign = 0;
 
-        private double mHorizontalSpeed = 0;
-        private double mVerticalSpeed = 0;
+        public double mHorizontalSpeed { get; set; }
+        public double mVerticalSpeed { get; set; }
         private double mAcceleration = .2;
         private double mAccelerationSign = 0;
         private const double cMaxSpeed = 12;

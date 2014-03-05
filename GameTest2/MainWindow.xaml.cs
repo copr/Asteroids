@@ -38,6 +38,11 @@ namespace GameTest2
         private void keyDown(object sender, KeyEventArgs e)
         {
             mRocket.KeyDown(e);
+            if(e.Key == Key.Space)
+            {
+                String lPath = "C:/Users/copr/Documents/Visual Studio 2013/Projects/Game/GameTest2/Image/shot.png";
+                mObjects.Add(new Shot(lPath, mRocket.Position, GameCanvas, mRocket.mVerticalSpeed , mRocket.mHorizontalSpeed));
+            }
         }
 
         private void keyUp(object sender, KeyEventArgs e)

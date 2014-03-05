@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace GameTest2
 {
-    class Asteroid : INotifiable
+    public class Asteroid : INotifiable
     {
         public Asteroid(Canvas aCanvas)
             : this("C:/Users/copr/Documents/Visual Studio 2013/Projects/Game/GameTest2/Image/asteroid2.png", 50, 50, new Point(20, 20), aCanvas)
@@ -76,10 +76,10 @@ namespace GameTest2
         private Image mImage = new Image();
         private Point mPosition;
         private Canvas mCanvas;
-        private double mHorizontalSpeed = 0;
-        private double mVerticalSpeed = 0;
-        private double mAcceleration = .2;
-        private double mAccelerationSign = 0;
+        public double mHorizontalSpeed { get; set; }
+        public double mVerticalSpeed { get; set; }
+       // private double mAcceleration = .2;
+       // private double mAccelerationSign = 0;
         private const double cMaxSpeed = 12;
     }
 }
