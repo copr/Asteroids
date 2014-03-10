@@ -8,9 +8,9 @@ using System.Windows.Media.Imaging;
 
 namespace GameTest2
 {
-    public abstract class SimpleMovingObject : MovingObject
+    public abstract class SimpleMovingObject : BasicObject
     {
-        public SimpleMovingObject(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition,
+        public SimpleMovingObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition,
             double aDirection, double aSpeed)
             : base(aBitmapFrame, aWidth, aHeight, aPosition)
         {

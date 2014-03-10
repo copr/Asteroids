@@ -14,5 +14,8 @@
     <BitmapImage x:Key="Projectile">
         Image/projectile.png
     </BitmapImage>
+    <BitmapImage x:Key="Explosion">
+        Image/explosion.png
+    </BitmapImage>
     
 </ResourceDictionary>

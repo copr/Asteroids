@@ -9,9 +9,9 @@ using System.Windows.Media.Imaging;
 
 namespace GameTest2
 {
-    public abstract class MovingObject
+    public abstract class BasicObject
     {
-        public MovingObject(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition)
+        public BasicObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition)
         {
             mImage = new Image();
             mBitmapFrame = aBitmapFrame;
@@ -31,6 +31,11 @@ namespace GameTest2
             lRotateTransform.Angle = aAngle;
             Image.RenderTransform = lRotateTransform;   
         }
+        public double Distance(BasicObject aOther)
+        {
+            return Math.Sqrt((mPosition.X - aOther.Position.X) * (mPosition.X - aOther.Position.X)
+                + (mPosition.Y - aOther.Position.Y) * (mPosition.Y - aOther.Position.Y));
+        }
         public abstract void ClockTick();
         
         public Point Position
@@ -42,6 +47,14 @@ namespace GameTest2
             set
             {
                 mPosition = value;
+            }
+        }
+
+        public virtual double CollisionRadius
+        {
+            get
+            {
+                return 0;
             }
         }
         public double OutsideSize
@@ -82,7 +95,7 @@ namespace GameTest2
 
         private double mOutsideSize;
 
-        public delegate void AddObject(MovingObject o);
+        public delegate void AddObject(BasicObject o);
 
     }
 }

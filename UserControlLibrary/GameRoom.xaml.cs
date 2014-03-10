@@ -29,25 +29,29 @@ namespace UserControlLibrary
         }
         public void Repaint()
         {
-            foreach (MovingObject o in mAllObjects)
+            foreach (BasicObject o in mAllObjects)
             {
                 Canvas.SetLeft(o.Image, o.Position.X - o.Image.Width / 2);
                 Canvas.SetTop(o.Image, o.Position.Y - o.Image.Height / 2);
             }
         }
-        public void AddObject(MovingObject o)
+        public void AddObject(BasicObject o)
         {
             mCanvas.Children.Add(o.Image);
             mAllObjects.Add(o);
             if (o is Asteroid)
                 mAsteroids.Add(o);
-            o.CreateObjectFunction = new MovingObject.AddObject(AddObjectRequest);
+            o.CreateObjectFunction = new BasicObject.AddObject(AddRequest);
         }
-        public void AddObjectRequest(MovingObject o)
+        public void AddRequest(BasicObject o)
         {
             mAddRequests.Add(o);
         }
-        private void ReturnObjectFromOutside(MovingObject o)
+        public void RemoveRequest(BasicObject o)
+        {
+            mRemoveRequest.Add(o);
+        }
+        private void ReturnObjectFromOutside(BasicObject o)
         {
             if (o.Position.X > RoomWidth + o.OutsideSize)
             {
@@ -66,31 +70,72 @@ namespace UserControlLibrary
                 o.Position = new Point(o.Position.X, RoomHeight + o.OutsideSize);
             }
         }
-        public void RemoveObject(MovingObject o)
+        public void RemoveObject(BasicObject o)
         {
             mCanvas.Children.Remove(o.Image);
             mAllObjects.Remove(o);
             if (o is Asteroid)
                 mAsteroids.Remove(o);
         }
+        private void SolveCollisions()
+        {
+            foreach (BasicObject o1 in mAllObjects)
+            {
+                foreach (BasicObject o2 in mAllObjects)
+                {
+                    if (o1 != o2)
+                    {
+                        if (o1 is Asteroid)
+                        {
+                            if (o2 is Asteroid)
+                            {
+                                if (o1.Distance(o2) < o1.CollisionRadius + o2.CollisionRadius)
+                                {
+                                    (o1 as Asteroid).Explode();
+                                    RemoveRequest(o1);
+                                }
+                            }
+                            if (o2 is BasicProjectile)
+                            {
+                                if (o1.Distance(o2) < o1.CollisionRadius + o2.CollisionRadius)
+                                {
+                                    (o1 as Asteroid).Explode();
+                                    RemoveRequest(o1);
+                                    RemoveRequest(o2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         public void ClockTick()
         {
-            MoveObjects();
+            foreach (BasicObject o in mAllObjects)
+            {
+                o.ClockTick();
+            }
             DealWithOutsideObjects();
+            SolveCollisions();
             if (mRandom.NextDouble() < AsteroidChance && mAsteroidGenerator != null)
             {
                 AddObject(mAsteroidGenerator.CreateAsteroid());
             }
-            foreach (MovingObject o in mAddRequests)
+            foreach (BasicObject o in mAddRequests)
             {
                 AddObject(o);
             }
+            foreach (BasicObject o in mRemoveRequest)
+            {
+                RemoveObject(o);
+            }
             mAddRequests.Clear();
+            mRemoveRequest.Clear();
             Repaint();
         }
         public new void KeyDown(KeyEventArgs e)
         {
-            foreach (MovingObject o in mAllObjects)
+            foreach (BasicObject o in mAllObjects)
             {
                 if (o is ControllableMovingObject)
                 {
@@ -100,7 +145,7 @@ namespace UserControlLibrary
         }
         public new void KeyUp(KeyEventArgs e)
         {
-            foreach (MovingObject o in mAllObjects)
+            foreach (BasicObject o in mAllObjects)
             {
                 if (o is ControllableMovingObject)
                 {
@@ -108,19 +153,11 @@ namespace UserControlLibrary
                 }
             }
         }
-        
-        private void MoveObjects()
-        {
-            foreach (MovingObject o in mAllObjects)
-            {
-                o.ClockTick();
-            }
-        }
         private void DealWithOutsideObjects()
         {
-            List<MovingObject> lObjectsToRemove = new List<MovingObject>();
+            List<BasicObject> lObjectsToRemove = new List<BasicObject>();
 
-            foreach (MovingObject o in mAllObjects)
+            foreach (BasicObject o in mAllObjects)
             {
                 if (o.Position.X > RoomWidth + o.OutsideSize
                     || o.Position.X < -o.OutsideSize
@@ -137,7 +174,7 @@ namespace UserControlLibrary
 
             }
             
-            foreach (MovingObject o in lObjectsToRemove)
+            foreach (BasicObject o in lObjectsToRemove)
             {
                 RemoveObject(o);
             }
@@ -185,9 +222,10 @@ namespace UserControlLibrary
             set;
         }
 
-        private HashSet<MovingObject> mAllObjects = new HashSet<MovingObject>();
-        private HashSet<MovingObject> mAsteroids = new HashSet<MovingObject>();
-        private List<MovingObject> mAddRequests = new List<MovingObject>();
+        private HashSet<BasicObject> mAllObjects = new HashSet<BasicObject>();
+        private HashSet<BasicObject> mAsteroids = new HashSet<BasicObject>();
+        private List<BasicObject> mAddRequests = new List<BasicObject>();
+        private List<BasicObject> mRemoveRequest = new List<BasicObject>();
 
         private AsteroidGenerator mAsteroidGenerator;
         private Random mRandom = new Random();

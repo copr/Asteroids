@@ -21,7 +21,7 @@ namespace GameTest2
         /// <param name="aHeight"></param>
         /// <param name="aPosition"></param>
         /// <param name="aKeys">Up, Down, Left, Right, Shoot</param>
-        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame, int aWidth, int aHeight, Point aPosition, List<Key> aKeys)
+        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame, double aWidth, double aHeight, Point aPosition, List<Key> aKeys)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
             mProjectileBitmapFrame = aProjectileBitmapFrame;
@@ -69,8 +69,6 @@ namespace GameTest2
         public override void ClockTick()
         {
             //Rotation
-            RotateTransform rotateTransform = new RotateTransform();
-
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
 
             RotateImage(mAngle);

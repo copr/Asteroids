@@ -11,13 +11,14 @@ namespace GameTest2
 {
     public class Asteroid : SimpleMovingObject
     {
-        public Asteroid(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition,
+        public Asteroid(BitmapFrame aBitmapFrame, BitmapFrame aExplosionFrame, double aWidth, double aHeight, Point aPosition,
             double aDirection, double aSpeed)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aDirection, aSpeed)
         {
             Random lRandom = new Random();
             mAngle = lRandom.NextDouble() * 360;
             mRotationSpeed = lRandom.NextDouble() * 4 - 2;
+            mExplosionFrame = aExplosionFrame;
         }
 
         public override void ClockTick()
@@ -27,8 +28,20 @@ namespace GameTest2
             mAngle += mRotationSpeed;
             RotateImage(mAngle);
         }
+        public override double CollisionRadius
+        {
+            get
+            {
+                return (Image.Width / 2) * 0.8;
+            }
+        }
+        public void Explode()
+        {
+            mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+        }
 
         private double mAngle;
         private double mRotationSpeed;
+        private BitmapFrame mExplosionFrame;
     }
 }

@@ -10,7 +10,7 @@ namespace GameTest2
 {
     public class BasicProjectile : SimpleMovingObject
     {
-        public BasicProjectile(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition,
+        public BasicProjectile(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition,
             double aDirection, double aSpeed)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aDirection, aSpeed)
         {
@@ -25,6 +25,13 @@ namespace GameTest2
         public override void ClockTick()
         {
             base.ClockTick();
+        }
+        public override double CollisionRadius
+        {
+            get
+            {
+                return (Image.Width / 2) * 0.8;
+            }
         }
     }
 }

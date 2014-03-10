@@ -8,9 +8,9 @@ using System.Windows.Media.Imaging;
 
 namespace GameTest2
 {
-    public abstract class ControllableMovingObject : MovingObject
+    public abstract class ControllableMovingObject : BasicObject
     {
-        public ControllableMovingObject(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition, List<Key> aKeys)
+        public ControllableMovingObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition, List<Key> aKeys)
             : base(aBitmapFrame, aWidth, aHeight, aPosition)
         {
             mKeys = aKeys;

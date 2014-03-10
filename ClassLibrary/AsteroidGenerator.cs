@@ -11,9 +11,10 @@ namespace GameTest2
 {
     public class AsteroidGenerator
     {
-        public AsteroidGenerator(BitmapFrame aAsteroidBitmapFrame)
+        public AsteroidGenerator(BitmapFrame aAsteroidBitmapFrame, BitmapFrame aExplosionBitmapFrame)
         {
             mAsteroidBitmapFrame = aAsteroidBitmapFrame;
+            mExplosionBitmapFrame = aExplosionBitmapFrame;
             AsteroidSize = 64;
         }
         public Asteroid CreateAsteroid()
@@ -54,7 +55,7 @@ namespace GameTest2
                 }
             }
 
-            return new Asteroid(mAsteroidBitmapFrame, AsteroidSize, AsteroidSize,
+            return new Asteroid(mAsteroidBitmapFrame, mExplosionBitmapFrame, AsteroidSize, AsteroidSize,
                 new Point(lAsteroidX, lAsteroidY),
                 lDirection, mRandom.NextDouble() * 5 + 1);
         }
@@ -76,5 +77,6 @@ namespace GameTest2
 
         private Random mRandom = new Random();
         private BitmapFrame mAsteroidBitmapFrame;
+        private BitmapFrame mExplosionBitmapFrame;
     }
 }
