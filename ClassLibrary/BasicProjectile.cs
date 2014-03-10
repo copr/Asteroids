@@ -10,23 +10,19 @@ namespace GameTest2
 {
     public class BasicProjectile : SimpleMovingObject
     {
-        public BasicProjectile(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition,
+        public BasicProjectile(double aWidth, double aHeight, BitmapFrame aBitmapFrame, Point aPosition,
             double aDirection, double aSpeed)
-            : base(aBitmapFrame, aWidth, aHeight, aPosition, aDirection, aSpeed)
+            : this(aBitmapFrame, aWidth, aHeight, aPosition, 
+            aSpeed * Math.Sin(aDirection * Math.PI / 180),
+            aSpeed * Math.Cos(aDirection * Math.PI / 180))
+        {
+
+        }
+        public BasicProjectile(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition, 
+            double aVerticalSpeed, double aHorizontalSpeed)
+            : base(aBitmapFrame, aWidth, aHeight, aPosition, aVerticalSpeed, aHorizontalSpeed)
         {
             mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
-        }
-        public BasicProjectile(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition,
-            double aDirection, double aVerticalSpeed, double aHorizontalSpeed)
-            : base(aBitmapFrame, aWidth, aHeight, aPosition, aDirection, aVerticalSpeed, aHorizontalSpeed)
-        {
-            mCollisionBehavior.Add(typeof(Asteroid), (BasicObject o2) =>
-            {
-                if (Distance(o2) < CollisionRadius + o2.CollisionRadius)
-                {
-                    mRemoveObject(this);
-                }
-            });
         }
         public override void ClockTick()
         {

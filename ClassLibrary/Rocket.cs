@@ -97,7 +97,7 @@ namespace GameTest2
             }
             if (mWantShoot && mCanShoot)
             {
-                mAddObject(new BasicProjectile(mProjectileBitmapFrame, 16, 16,
+                mAddObject(new BasicProjectile(16, 16, mProjectileBitmapFrame,
                     Position, mAngle, mProjectileSpeed));
 
                 mCanShoot = false;

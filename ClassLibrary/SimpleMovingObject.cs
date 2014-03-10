@@ -10,15 +10,17 @@ namespace GameTest2
 {
     public abstract class SimpleMovingObject : BasicObject
     {
-        public SimpleMovingObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition,
+        public SimpleMovingObject(double aWidth, double aHeight, BitmapFrame aBitmapFrame, Point aPosition,
             double aDirection, double aSpeed)
-            : base(aBitmapFrame, aWidth, aHeight, aPosition)
+            : this(aBitmapFrame, aWidth, aHeight, aPosition, 
+            aSpeed * Math.Sin(aDirection * Math.PI / 180),
+            aSpeed * Math.Cos(aDirection * Math.PI / 180)
+            )
         {
-            mVerticalSpeed = aSpeed * Math.Sin(aDirection * Math.PI / 180);
-            mHorizontalSpeed = aSpeed * Math.Cos(aDirection * Math.PI / 180);
+
         }
-        public SimpleMovingObject(BitmapFrame aBitmapFrame, int aWidth, int aHeight, Point aPosition,
-            double aDirection, double aVerticalSpeed, double aHorizontalSpeed)
+        public SimpleMovingObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition,
+            double aVerticalSpeed, double aHorizontalSpeed)
             : base(aBitmapFrame, aWidth, aHeight, aPosition)
         {
             mHorizontalSpeed = aHorizontalSpeed;

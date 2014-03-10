@@ -13,7 +13,7 @@ namespace GameTest2
     {
         public Asteroid(BitmapFrame aBitmapFrame, BitmapFrame aExplosionFrame, double aWidth, double aHeight, Point aPosition,
             double aDirection, double aSpeed)
-            : base(aBitmapFrame, aWidth, aHeight, aPosition, aDirection, aSpeed)
+            : base(aWidth, aHeight, aBitmapFrame, aPosition, aDirection, aSpeed)
         {
             Random lRandom = new Random();
             mAngle = lRandom.NextDouble() * 360;
