@@ -41,7 +41,8 @@ namespace UserControlLibrary
             mAllObjects.Add(o);
             if (o is Asteroid)
                 mAsteroids.Add(o);
-            o.CreateObjectFunction = new BasicObject.AddObject(AddRequest);
+            o.CreateObjectFunction = new BasicObject.ActionWithObject(AddRequest);
+            o.RemoveObjectFunction = new BasicObject.ActionWithObject(RemoveRequest);
         }
         public void AddRequest(BasicObject o)
         {
@@ -85,9 +86,10 @@ namespace UserControlLibrary
                 {
                     if (o1 != o2)
                     {
-                        if (o1 is Asteroid)
+                        o1.SolveCollision(o2);
+                        /*if (o1 is Asteroid)
                         {
-                            if (o2 is Asteroid)
+                            if (o1.mCollisionTypes.Contains(o2.GetType()))
                             {
                                 if (o1.Distance(o2) < o1.CollisionRadius + o2.CollisionRadius)
                                 {
@@ -104,7 +106,7 @@ namespace UserControlLibrary
                                     RemoveRequest(o2);
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
             }

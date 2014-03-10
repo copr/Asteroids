@@ -19,6 +19,9 @@ namespace GameTest2
             mAngle = lRandom.NextDouble() * 360;
             mRotationSpeed = lRandom.NextDouble() * 4 - 2;
             mExplosionFrame = aExplosionFrame;
+
+            mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
+            mCollisionBehavior.Add(typeof(BasicProjectile), DefaultCollisionSolve);
         }
 
         public override void ClockTick()
@@ -35,7 +38,8 @@ namespace GameTest2
                 return (Image.Width / 2) * 0.8;
             }
         }
-        public void Explode()
+
+        public override void DestroyEffect()
         {
             mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
         }

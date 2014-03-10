@@ -24,6 +24,8 @@ namespace GameTest2
             mOutsideSize = Math.Min(mImage.Width, mImage.Height) / 2;
 
             mPosition = aPosition;
+
+            
         }
         public void RotateImage(double aAngle)
         {
@@ -37,7 +39,21 @@ namespace GameTest2
                 + (mPosition.Y - aOther.Position.Y) * (mPosition.Y - aOther.Position.Y));
         }
         public abstract void ClockTick();
-        
+
+        public virtual void DestroyEffect()
+        {
+
+        }
+
+        public void DefaultCollisionSolve(BasicObject o)
+        {
+            if (Distance(o) < CollisionRadius + o.CollisionRadius)
+            {
+                DestroyEffect();
+                mRemoveObject(this);
+            }
+        }
+
         public Point Position
         {
             get
@@ -80,7 +96,7 @@ namespace GameTest2
             }
         }
 
-        public AddObject CreateObjectFunction
+        public ActionWithObject CreateObjectFunction
         {
             set
             {
@@ -88,14 +104,37 @@ namespace GameTest2
             }
         }
 
+        public ActionWithObject RemoveObjectFunction
+        {
+            set
+            {
+                mRemoveObject = value;
+            }
+        }
+
+        public void SolveCollision(BasicObject o)
+        {
+            ActionWithObject lAction;
+            if (mCollisionBehavior.TryGetValue(o.GetType(), out lAction))
+            {
+                lAction(o);
+            }
+
+        }
+
+
+
         private BitmapFrame mBitmapFrame;
         private Image mImage;
         private Point mPosition = new Point();
-        protected AddObject mAddObject;
+        protected ActionWithObject mAddObject;
+        protected ActionWithObject mRemoveObject;
 
         private double mOutsideSize;
 
-        public delegate void AddObject(BasicObject o);
+        public delegate void ActionWithObject(BasicObject o);
 
+        protected Dictionary<Type, ActionWithObject> mCollisionBehavior =
+            new Dictionary<Type, ActionWithObject>();
     }
 }

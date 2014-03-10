@@ -127,7 +127,7 @@ namespace GameTest2
 
         private bool mWantShoot = false;
         private bool mCanShoot = true;
-        private int mShootTimeOutTicks = 4;
+        private int mShootTimeOutTicks = 1;
         private int mShootTicksRemaining;
         private double mProjectileSpeed = 16;
     }
