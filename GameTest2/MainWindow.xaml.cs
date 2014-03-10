@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Threading;
 
+
 namespace GameTest2
 {
     /// <summary>
@@ -23,57 +24,62 @@ namespace GameTest2
         public MainWindow()
         {
             InitializeComponent();
-
-            mObjects = new List<INotifiable>();
-
-            mRocket = new Rocket(Key.Down, Key.Up, Key.Left, Key.Right,
-               "Image/rocket.png",
-                96, 96, GameCanvas, new Point(GameCanvas.Width / 2, GameCanvas.Height / 2));
-
-            mObjects.Add(mRocket);
-            mObjects.Add(new Asteroid(GameCanvas));
-            mTimer = new Timer(Update, null, 0, 10);
+            
+            mRocketBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Rocket"];
+            mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
+            mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
+            mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
         }
 
         private void keyDown(object sender, KeyEventArgs e)
         {
-            mRocket.KeyDown(e);
-            if(e.Key == Key.Space)
+            mGameRoom.KeyDown(e);
+
+            if (e.Key == Key.P)
             {
-                String lPath = "C:/Users/copr/Documents/Visual Studio 2013/Projects/Game/GameTest2/Image/shot.png";
-                mObjects.Add(new Shot(lPath, mRocket.Position, GameCanvas, mRocket.mVerticalSpeed , mRocket.mHorizontalSpeed));
+                if (mGameRunning)
+                    mGameRunning = false;
+                else
+                    mGameRunning = true;
             }
         }
 
         private void keyUp(object sender, KeyEventArgs e)
         {
-            mRocket.KeyUp(e);
+            mGameRoom.KeyUp(e);
         }
 
-        private void Update(Object state)
-        {          
-            Dispatcher.Invoke(new Action(MoveRocket), null);         
-        }
-
-        private void MoveRocket()
+        private void ClockTick(Object state)
         {
-            foreach (INotifiable x in mObjects)
-            { 
-                x.Notify(null);
-            }
+            Dispatcher.Invoke(new Action(UpdateObjects), null);
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void UpdateObjects()
         {
-            mObjects.Add(new Asteroid(GameCanvas));
+            if (mGameRunning)
+                mGameRoom.ClockTick();
         }
-        
-        private Rocket mRocket;
 
-        private List<INotifiable> mObjects;
-        private Timer mTimer;
+        private void GameRoomLoaded(object sender, RoutedEventArgs e)
+        {
+            mGameRoom.AddObject(new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, 96, 64,
+                new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
+                new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl }));
 
-       
+            mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
+            mGameRoom.AsteroidChance = 0.05;
+
+            mClock = new Timer(ClockTick, null, 0, 10);
+        }
+
+        Random mRandom = new Random();
+
+        private Timer mClock;
+        private BitmapFrame mAsteroidBitmapFrame;
+        private BitmapFrame mRocketBitmapFrame;
+        private BitmapFrame mProjectileBitmapFrame;
+        private BitmapFrame mExplosionBitmapFrame;
+
+        private bool mGameRunning = true;
     }
 }
-

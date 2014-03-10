@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:Class="GameResources">
+    
+    <BitmapImage x:Key="Spaceship">
+        Image/spaceship.png
+    </BitmapImage>
+    <BitmapImage x:Key="Asteroid">
+        Image/asteroid.png
+    </BitmapImage>
+    <BitmapImage x:Key="Rocket">
+        Image/rocket2.png
+    </BitmapImage>
+    <BitmapImage x:Key="Projectile">
+        Image/projectile.png
+    </BitmapImage>
+    <BitmapImage x:Key="Explosion">
+        Image/explosion.png
+    </BitmapImage>
+    
+</ResourceDictionary>
