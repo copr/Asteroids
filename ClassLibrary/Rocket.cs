@@ -25,6 +25,25 @@ namespace GameTest2
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
             mProjectileBitmapFrame = aProjectileBitmapFrame;
+            mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
+            mHealth = 5;
+        }
+
+        private void CollisionSolve(BasicObject o)
+        {
+            if (Distance(o) < CollisionRadius + o.CollisionRadius)
+            {
+                //DestroyEffect();
+                mHealth--;              
+            }
+        }
+        public double mHealth { get; set; }
+        public override double CollisionRadius
+        {
+            get
+            {
+                return (Image.Width / 2) * 0.8;
+            }
         }
 
         public override void KeyDown(KeyEventArgs e)
