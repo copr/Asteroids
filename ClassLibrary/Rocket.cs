@@ -21,23 +21,36 @@ namespace GameTest2
         /// <param name="aHeight"></param>
         /// <param name="aPosition"></param>
         /// <param name="aKeys">Up, Down, Left, Right, Shoot</param>
-        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame, double aWidth, double aHeight, Point aPosition, List<Key> aKeys)
+        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame
+            , BitmapFrame aExplosionFrame, double aWidth, double aHeight
+            , Point aPosition, List<Key> aKeys)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
             mProjectileBitmapFrame = aProjectileBitmapFrame;
+            mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
             mHealth = 5;
         }
-
         private void CollisionSolve(BasicObject o)
         {
             if (Distance(o) < CollisionRadius + o.CollisionRadius)
             {
-                //DestroyEffect();
-                mHealth--;              
+                mHealth--;
+                if (mHealth == 0)
+                {
+                    DestroyEffect();
+                    GameOver();
+                }
             }
         }
-        public double mHealth { get; set; }
+        private void GameOver()
+        {
+            mRemoveObject(this);
+        }
+        public override void DestroyEffect()
+        {
+            mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+        }
         public override double CollisionRadius
         {
             get
@@ -131,8 +144,10 @@ namespace GameTest2
                 return EOutsideRoomAction.Return;
             }
         }
+        public double mHealth { get; set; }
 
         private BitmapFrame mProjectileBitmapFrame;
+        private BitmapFrame mExplosionFrame;
 
         private double mAngle = -90;
         private const double cAngleChangeSpeed = 4;

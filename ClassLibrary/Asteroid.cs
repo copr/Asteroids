@@ -22,6 +22,7 @@ namespace GameTest2
 
             mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
             mCollisionBehavior.Add(typeof(BasicProjectile), DefaultCollisionSolve);
+            mCollisionBehavior.Add(typeof(Rocket), DefaultCollisionSolve);
         }
 
         public override void ClockTick()

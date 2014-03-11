@@ -87,35 +87,19 @@ namespace UserControlLibrary
                     if (o1 != o2)
                     {
                         o1.SolveCollision(o2);
-                        /*if (o1 is Asteroid)
-                        {
-                            if (o1.mCollisionTypes.Contains(o2.GetType()))
-                            {
-                                if (o1.Distance(o2) < o1.CollisionRadius + o2.CollisionRadius)
-                                {
-                                    (o1 as Asteroid).Explode();
-                                    RemoveRequest(o1);
-                                }
-                            }
-                            if (o2 is BasicProjectile)
-                            {
-                                if (o1.Distance(o2) < o1.CollisionRadius + o2.CollisionRadius)
-                                {
-                                    (o1 as Asteroid).Explode();
-                                    RemoveRequest(o1);
-                                    RemoveRequest(o2);
-                                }
-                            }
-                        }*/
                     }
                 }
             }
         }
-        public void ClockTick()
+        public void ClockTick(Window aWindow)
         {
             foreach (BasicObject o in mAllObjects)
             {
-                o.ClockTick();
+                if (o is Rocket)
+                {
+                    RocketHealth = (o as Rocket).mHealth;
+                }        
+                o.ClockTick();                     
             }
             DealWithOutsideObjects();
             SolveCollisions();
@@ -131,6 +115,8 @@ namespace UserControlLibrary
             {
                 RemoveObject(o);
             }
+         
+            
             mAddRequests.Clear();
             mRemoveRequest.Clear();
             Repaint();
@@ -197,6 +183,7 @@ namespace UserControlLibrary
             }
         }
 
+        public double RocketHealth { get; set; }
         public AsteroidGenerator AsteroidGenerator
         {
             get

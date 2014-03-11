@@ -29,6 +29,8 @@ namespace GameTest2
             mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
             mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
             mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
+
+            mHealthLabel.Content = "Health: 5";
         }
 
         private void keyDown(object sender, KeyEventArgs e)
@@ -57,12 +59,16 @@ namespace GameTest2
         private void UpdateObjects()
         {
             if (mGameRunning)
-                mGameRoom.ClockTick();
+            {
+                mGameRoom.ClockTick(this);
+                mHealthLabel.Content = "Health: " + mGameRoom.RocketHealth;
+            }
+               
         }
 
         private void GameRoomLoaded(object sender, RoutedEventArgs e)
         {
-            mGameRoom.AddObject(new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, 96, 64,
+            mGameRoom.AddObject(new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mExplosionBitmapFrame, 96, 64,
                 new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
                 new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl }));
 
