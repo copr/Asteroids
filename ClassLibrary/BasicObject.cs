@@ -47,7 +47,7 @@ namespace GameTest2
 
         public void DefaultCollisionSolve(BasicObject o)
         {
-            if (Distance(o) < CollisionRadius + o.CollisionRadius)
+            if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
             {
                 DestroyEffect();
                 mRemoveObject(this);
@@ -129,8 +129,10 @@ namespace GameTest2
         private Point mPosition = new Point();
         protected ActionWithObject mAddObject;
         protected ActionWithObject mRemoveObject;
+        protected Random mRandom = new Random();
 
         private double mOutsideSize;
+        protected int mInvincibleSteps = 10;
 
         public delegate void ActionWithObject(BasicObject o);
 

@@ -55,7 +55,7 @@ namespace GameTest2
                 }
             }
 
-            return new Asteroid(mAsteroidBitmapFrame, mExplosionBitmapFrame, AsteroidSize, AsteroidSize,
+            return new Asteroid(mAsteroidBitmapFrame, mExplosionBitmapFrame, AsteroidSize,
                 new Point(lAsteroidX, lAsteroidY),
                 lDirection, mRandom.NextDouble() * 5 + 1);
         }

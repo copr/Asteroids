@@ -31,6 +31,13 @@ namespace GameTest2
         {
             Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
         }
+        public double Speed
+        {
+            get
+            {
+                return Math.Sqrt(mVerticalSpeed * mVerticalSpeed + mHorizontalSpeed * mHorizontalSpeed);
+            }
+        }
 
         private double mHorizontalSpeed;
         private double mVerticalSpeed;
