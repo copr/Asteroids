@@ -114,18 +114,23 @@ namespace GameTest2
         {
             //Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
-
             RotateImage(mAngle);
 
             //Translation
-            mVerticalSpeed += cAcceleration * mAccelerationSign * Math.Sin(mAngle * Math.PI / 180);
-            mHorizontalSpeed += cAcceleration * mAccelerationSign * Math.Cos(mAngle * Math.PI / 180);
+            mVerticalSpeed += mAcceleration * mAccelerationSign * Math.Sin(mAngle * Math.PI / 180);
+            mHorizontalSpeed += mAcceleration * mAccelerationSign * Math.Cos(mAngle * Math.PI / 180);
 
             double lTotalSpeed = Math.Sqrt(mHorizontalSpeed * mHorizontalSpeed + mVerticalSpeed * mVerticalSpeed);
-            if (lTotalSpeed > cMaxSpeed)
+            if (lTotalSpeed > mMaxSpeed)
             {
-                mVerticalSpeed *= cMaxSpeed / lTotalSpeed;
-                mHorizontalSpeed *= cMaxSpeed / lTotalSpeed;
+                mVerticalSpeed *= mMaxSpeed / lTotalSpeed;
+                mHorizontalSpeed *= mMaxSpeed / lTotalSpeed;
+            }
+
+            if (lTotalSpeed < mAcceleration / 2)
+            {
+                mVerticalSpeed = 0;
+                mHorizontalSpeed = 0;
             }
 
             Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
@@ -171,9 +176,9 @@ namespace GameTest2
 
         private double mHorizontalSpeed = 0;
         private double mVerticalSpeed = 0;
-        private const double cAcceleration = .2;
+        private double mAcceleration = .2;
         private double mAccelerationSign = 0;
-        private const double cMaxSpeed = 8;
+        private double mMaxSpeed = 8;
 
         private bool mWantShoot = false;
         private bool mCanShoot = true;
