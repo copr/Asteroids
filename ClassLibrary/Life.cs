@@ -13,10 +13,10 @@ namespace GameTest2
 {
     public class Life : BasicObject
     {
-        public Life(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition) :
+        public Life(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition, double aAngle) :
             base(aBitmapFrame, aWidth, aHeight, aPosition)
         {
-
+            RotateImage(aAngle);
         }
 
         public override void ClockTick()

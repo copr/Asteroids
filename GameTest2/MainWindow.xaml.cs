@@ -74,7 +74,7 @@ namespace GameTest2
             mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
             mGameRoom.AsteroidChance = 0.02;
 
-            mClock = new Timer(ClockTick, null, 0, 20);
+            mClock = new Timer(ClockTick, null, 0, 10);
         }
 
         Random mRandom = new Random();

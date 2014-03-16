@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-//using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
@@ -106,9 +105,13 @@ namespace GameTest2
         {
             for(int i = 0; i < mHealth; i++)
             {
-                mLifes.Push(new Life((BitmapFrame)Image.Source, 30, 50, new Point(Position.X*2 - i * 50 - 20, Position.Y*2 - 50)));
+                AddHealth();
                 mAddObject(mLifes.Peek());
             }
+        }
+        public void AddHealth()
+        {
+            mLifes.Push(new Life((BitmapFrame)Image.Source, 40, 30, new Point(Position.X * 2 - mLifes.Count * 50 - 20, Position.Y * 2 - 50), 270));
         }
         public override void ClockTick()
         {
