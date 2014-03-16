@@ -44,6 +44,10 @@ namespace GameTest2
         {
 
         }
+        public virtual void Initialize()
+        {
+
+        }
 
         public void DefaultCollisionSolve(BasicObject o)
         {

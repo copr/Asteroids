@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+//using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
@@ -30,12 +31,15 @@ namespace GameTest2
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
             mHealth = 5;
+            
         }
+
         private void CollisionSolve(BasicObject o)
         {
             if (Distance(o) < CollisionRadius + o.CollisionRadius)
             {
                 mHealth--;
+                mRemoveObject(mLifes.Pop());
                 if (mHealth == 0)
                 {
                     DestroyEffect();
@@ -98,6 +102,14 @@ namespace GameTest2
                 mWantShoot = false;
             }
         }
+        public override void Initialize()
+        {
+            for(int i = 0; i < mHealth; i++)
+            {
+                mLifes.Push(new Life((BitmapFrame)Image.Source, 30, 50, new Point(Position.X*2 - i * 50 - 20, Position.Y*2 - 50)));
+                mAddObject(mLifes.Peek());
+            }
+        }
         public override void ClockTick()
         {
             //Rotation
@@ -135,6 +147,8 @@ namespace GameTest2
                 mCanShoot = false;
                 mShootTicksRemaining = mShootTimeOutTicks;
             }
+
+            
         }
 
         public override EOutsideRoomAction OutsideRoomAction
@@ -148,6 +162,8 @@ namespace GameTest2
 
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionFrame;
+
+        private Stack<Life> mLifes = new Stack<Life>();
 
         private double mAngle = -90;
         private const double cAngleChangeSpeed = 4;

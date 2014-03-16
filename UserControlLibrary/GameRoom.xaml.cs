@@ -43,6 +43,7 @@ namespace UserControlLibrary
                 mAsteroids.Add(o);
             o.CreateObjectFunction = new BasicObject.ActionWithObject(AddRequest);
             o.RemoveObjectFunction = new BasicObject.ActionWithObject(RemoveRequest);
+            o.Initialize();
         }
         public void AddRequest(BasicObject o)
         {
@@ -103,6 +104,7 @@ namespace UserControlLibrary
             }
             DealWithOutsideObjects();
             SolveCollisions();
+            
             if (mRandom.NextDouble() < AsteroidChance && mAsteroidGenerator != null)
             {
                 AddObject(mAsteroidGenerator.CreateAsteroid());
