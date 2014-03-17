@@ -54,7 +54,7 @@ namespace GameTest2
             if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
             {
                 DestroyEffect();
-                mRemoveObject(this);
+                mRoomActionRequest(ERoomAction.RemoveObject, this);
             }
         }
 
@@ -74,7 +74,7 @@ namespace GameTest2
         {
             get
             {
-                return 0;
+                return double.MinValue;
             }
         }
         public double OutsideSize
@@ -100,19 +100,11 @@ namespace GameTest2
             }
         }
 
-        public ActionWithObject CreateObjectFunction
+        public RoomActionRequest RoomActionFunction
         {
             set
             {
-                mAddObject = value;
-            }
-        }
-
-        public ActionWithObject RemoveObjectFunction
-        {
-            set
-            {
-                mRemoveObject = value;
+                mRoomActionRequest = value;
             }
         }
 
@@ -123,7 +115,6 @@ namespace GameTest2
             {
                 lAction(o);
             }
-
         }
 
         public double GameRoomWidth { get; set; }
@@ -132,14 +123,14 @@ namespace GameTest2
         private BitmapFrame mBitmapFrame;
         private Image mImage;
         private Point mPosition = new Point();
-        protected ActionWithObject mAddObject;
-        protected ActionWithObject mRemoveObject;
+        protected RoomActionRequest mRoomActionRequest;
         protected Random mRandom = new Random();
 
         private double mOutsideSize;
         protected int mInvincibleSteps = 10;
 
-        public delegate void ActionWithObject(BasicObject o);     
+        public delegate void RoomActionRequest(ERoomAction aAction, object arg);
+        public delegate void ActionWithObject(BasicObject o);
 
         protected Dictionary<Type, ActionWithObject> mCollisionBehavior =
             new Dictionary<Type, ActionWithObject>();

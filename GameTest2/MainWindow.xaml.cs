@@ -29,6 +29,10 @@ namespace GameTest2
             mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
             mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
             mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
+
+            mGameRoom.ControlActionFunction = new UserControlLibrary.GameRoom.ControlActionRequest(InvokeAction);
+
+            mClock = new Timer(ClockTick, null, 0, 10);
         }
 
         private void keyDown(object sender, KeyEventArgs e)
@@ -60,20 +64,41 @@ namespace GameTest2
             {
                 mGameRoom.ClockTick();
             }
-               
+        }  
+        private void GameRoomLoaded(object sender, RoutedEventArgs e)
+        {
+
         }
 
-        private void GameRoomLoaded(object sender, RoutedEventArgs e)
+        private void mStartGameButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartNewGame();
+            mStartGameButton.Visibility = System.Windows.Visibility.Hidden;
+        }
+        private void StartNewGame()
         {
             mGameRoom.AddObject(new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mExplosionBitmapFrame, 96, 64,
                 new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
                 new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl }));
 
-
             mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
-            mGameRoom.AsteroidChance = 0.07;
+            mGameRoom.AsteroidChance = 0.04;
 
-            mClock = new Timer(ClockTick, null, 0, 10);
+            mGameRunning = true;
+        }
+
+        public void InvokeAction(EControlAction aAction, object arg)
+        {
+            switch (aAction)
+            {
+                case EControlAction.GameOver:
+                    mGameRoom.Reset();
+                    mGameRunning = false;
+                    mStartGameButton.Visibility = System.Windows.Visibility.Visible;
+                    break;
+                default:
+                    break;
+            }
         }
 
         Random mRandom = new Random();
@@ -84,6 +109,6 @@ namespace GameTest2
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionBitmapFrame;
 
-        private bool mGameRunning = true;
+        private bool mGameRunning = false;
     }
 }

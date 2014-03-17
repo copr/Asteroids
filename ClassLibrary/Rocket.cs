@@ -47,27 +47,28 @@ namespace GameTest2
                     mNumOfLifes--;                   
                     if (mNumOfLifes < 0)
                     {
-                        DestroyEffect();
-                        GameOver();
-                    }
+                    DestroyEffect();
+                    GameOver();
+                }
                     else
                     {
-                        mRemoveObject(mLifes.Pop());
+                        mRoomActionRequest(ERoomAction.RemoveObject, mLifes.Pop());
                         AddEnergy();
-                    }
+            }
                     Position = new Point(GameRoomWidth / 2, GameRoomHeight / 2);
                     mVerticalSpeed = 0;
                     mHorizontalSpeed = 0;
-                }
+        }
             }
         }
         private void GameOver()
         {
-            mRemoveObject(this);
+            mRoomActionRequest(ERoomAction.RemoveObject, this);
+            mRoomActionRequest(ERoomAction.GameOver, null);
         }
         public override void DestroyEffect()
         {
-            mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Width, Position));
         }
         public override double CollisionRadius
         {
@@ -127,7 +128,7 @@ namespace GameTest2
             {
                 mLifes.Push(new Life((BitmapFrame)Image.Source, 40, 30,
                     new Point(GameRoomWidth - mLifes.Count * 50 - 20, GameRoomHeight - 50), 270));
-                mAddObject(mLifes.Peek());
+                mRoomActionRequest(ERoomAction.AddObject, mLifes.Peek());
             }
         }
 
@@ -137,7 +138,7 @@ namespace GameTest2
             {
                 mEnergies.Push(new Life((BitmapFrame)Image.Source, 20, 15,
                     new Point(GameRoomWidth - mEnergies.Count * 15 - 15, GameRoomHeight - 20), 270));
-                mAddObject(mEnergies.Peek());
+                mRoomActionRequest(ERoomAction.AddObject, mEnergies.Peek());
             }
         }
 
@@ -146,8 +147,8 @@ namespace GameTest2
             for (int i = 0; i < aDropped; i++)
             {
                 if (mEnergies.Count != 0)
-                { 
-                    mRemoveObject(mEnergies.Pop());
+                {
+                    mRoomActionRequest(ERoomAction.RemoveObject, mEnergies.Pop());
                 }
             }
         }
@@ -187,7 +188,7 @@ namespace GameTest2
             }
             if (mWantShoot && mCanShoot)
             {
-                mAddObject(new BasicProjectile(16, 16, mProjectileBitmapFrame,
+                mRoomActionRequest(ERoomAction.AddObject, new BasicProjectile(16, 16, mProjectileBitmapFrame,
                     Position, mAngle, mProjectileSpeed));
 
                 mCanShoot = false;

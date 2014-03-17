@@ -51,6 +51,8 @@
     <Compile Include="BasicProjectile.cs" />
     <Compile Include="ControllableMovingObject.cs" />
     <Compile Include="EOutsideRoomAction.cs" />
+    <Compile Include="EControlAction.cs" />
+    <Compile Include="ERoomAction.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="BasicObject.cs" />
     <Compile Include="Life.cs" />

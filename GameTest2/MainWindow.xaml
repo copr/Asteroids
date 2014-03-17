@@ -7,6 +7,7 @@
         Background="DodgerBlue" ResizeMode="NoResize" Name="MainWindowName">
     <Grid>
         <a:GameRoom Name="mGameRoom" Loaded="GameRoomLoaded" HorizontalAlignment="Left" Width="572" Height="572" VerticalAlignment="Top"/>
+        <Button Name="mStartGameButton" Content="Start new game" HorizontalAlignment="Left" Height="68" Margin="216,263,0,0" VerticalAlignment="Top" Width="148" Click="mStartGameButton_Click"/>
     </Grid>
     <Window.Resources>
         <ResourceDictionary>

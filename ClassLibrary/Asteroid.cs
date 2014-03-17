@@ -32,10 +32,10 @@ namespace GameTest2
             if (Image.Width > 16)
             {
                 double lAngle = 360 * mRandom.NextDouble();
-                mAddObject(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                mRoomActionRequest(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
                     Position,
                     lAngle - 90 + mRandom.NextDouble() * 180, Speed));
-                mAddObject(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                mRoomActionRequest(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
                     Position,
                     lAngle + 180 - 90 + mRandom.NextDouble() * 180, Speed));
             }
@@ -63,7 +63,7 @@ namespace GameTest2
             if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
             {
                 DestroyEffect();
-                mRemoveObject(this);
+                mRoomActionRequest(ERoomAction.RemoveObject, this);
             }
         }
         public void CollisionSolve(BasicObject o)
@@ -72,12 +72,13 @@ namespace GameTest2
             {
                 CreateChildren();
                 DestroyEffect();
-                mRemoveObject(this);
+                mRoomActionRequest(ERoomAction.RemoveObject, this);
             }
         }
         public override void DestroyEffect()
         {
-            mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
         }
 
         private double mAngle;

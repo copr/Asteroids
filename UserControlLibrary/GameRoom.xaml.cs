@@ -40,20 +40,42 @@ namespace UserControlLibrary
             mCanvas.Children.Add(o.Image);
             mAllObjects.Add(o);
             if (o is Asteroid)
+            {
                 mAsteroids.Add(o);
-            o.CreateObjectFunction = new BasicObject.ActionWithObject(AddRequest);
-            o.RemoveObjectFunction = new BasicObject.ActionWithObject(RemoveRequest);
+            }
             o.GameRoomHeight = RoomHeight;
             o.GameRoomWidth = RoomWidth;
+
+            o.RoomActionFunction = new BasicObject.RoomActionRequest(InvokeAction);
             o.Initialize();
         }
-        public void AddRequest(BasicObject o)
+
+        public void SolveRequests()
         {
-            mAddRequests.Add(o);
+            bool lGameOverRequest = false;
+            foreach (Tuple<ERoomAction, object> request in mRequests)
+            {
+                switch (request.Item1)
+                {
+                    case ERoomAction.AddObject:
+                        AddObject((BasicObject)request.Item2);
+                        break;
+                    case ERoomAction.RemoveObject:
+                        RemoveObject((BasicObject)request.Item2);
+                        break;
+                    case ERoomAction.GameOver:
+                        lGameOverRequest = true;
+                        break;
+                    default:
+                        break;
+                }
+                if (lGameOverRequest)
+                    break;
         }
-        public void RemoveRequest(BasicObject o)
-        {
-            mRemoveRequest.Add(o);
+            if (lGameOverRequest)
+                mControlActionRequest(EControlAction.GameOver, null);
+
+            mRequests.Clear();
         }
         private void ReturnObjectFromOutside(BasicObject o)
         {
@@ -97,9 +119,10 @@ namespace UserControlLibrary
         public void ClockTick()
         {
             foreach (BasicObject o in mAllObjects)
-            { 
+            {
                 o.ClockTick();                     
             }
+
             DealWithOutsideObjects();
             SolveCollisions();
             
@@ -107,18 +130,8 @@ namespace UserControlLibrary
             {
                 AddObject(mAsteroidGenerator.CreateAsteroid());
             }
-            foreach (BasicObject o in mAddRequests)
-            {
-                AddObject(o);
-            }
-            foreach (BasicObject o in mRemoveRequest)
-            {
-                RemoveObject(o);
-            }
          
-            
-            mAddRequests.Clear();
-            mRemoveRequest.Clear();
+            SolveRequests();
             Repaint();
         }
         public new void KeyDown(KeyEventArgs e)
@@ -130,6 +143,18 @@ namespace UserControlLibrary
                     (o as ControllableMovingObject).KeyDown(e);
                 }
             }
+        }
+        public void InvokeAction(ERoomAction aAction, object arg)
+        {
+            mRequests.Add(new Tuple<ERoomAction, object>(aAction, arg));
+            }
+        public void Reset()
+        {
+            mAsteroids.Clear();
+            mAllObjects.Clear();
+            mRequests.Clear();
+            mCanvas.Children.Clear();
+            mAsteroidGenerator = null;
         }
         public new void KeyUp(KeyEventArgs e)
         {
@@ -211,12 +236,24 @@ namespace UserControlLibrary
             set;
         }
 
+        public ControlActionRequest ControlActionFunction
+        {
+            set
+            {
+                mControlActionRequest = value;
+            }
+        }
+
         private HashSet<BasicObject> mAllObjects = new HashSet<BasicObject>();
         private HashSet<BasicObject> mAsteroids = new HashSet<BasicObject>();
-        private List<BasicObject> mAddRequests = new List<BasicObject>();
-        private List<BasicObject> mRemoveRequest = new List<BasicObject>();
+
+        private List<Tuple<ERoomAction, object>> mRequests = new List<Tuple<ERoomAction, object>>();
 
         private AsteroidGenerator mAsteroidGenerator;
         private Random mRandom = new Random();
+
+        private ControlActionRequest mControlActionRequest;
+
+        public delegate void ControlActionRequest(EControlAction aAction, object arg);
     }
 }
