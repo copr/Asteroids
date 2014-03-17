@@ -21,10 +21,48 @@ namespace GameTest2
         /// <param name="aHeight"></param>
         /// <param name="aPosition"></param>
         /// <param name="aKeys">Up, Down, Left, Right, Shoot</param>
-        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame, double aWidth, double aHeight, Point aPosition, List<Key> aKeys)
+        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame
+            , BitmapFrame aExplosionFrame, double aWidth, double aHeight
+            , Point aPosition, List<Key> aKeys)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
             mProjectileBitmapFrame = aProjectileBitmapFrame;
+            mExplosionFrame = aExplosionFrame;
+            mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
+            mHealth = 5;
+        }
+
+        private void CollisionSolve(BasicObject o)
+        {
+            if (Distance(o) < CollisionRadius + o.CollisionRadius)
+            {
+                mHealth--;
+                if (mLifes.Count != 0)
+                {
+                    mRoomActionRequest(ERoomAction.RemoveObject, mLifes.Pop());
+                    if (mHealth == 0)
+                    {
+                        DestroyEffect();
+                        GameOver();
+                    }
+                }
+            }
+        }
+        private void GameOver()
+        {
+            mRoomActionRequest(ERoomAction.RemoveObject, this);
+            mRoomActionRequest(ERoomAction.GameOver, null);
+        }
+        public override void DestroyEffect()
+        {
+            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Width, Position));
+        }
+        public override double CollisionRadius
+        {
+            get
+            {
+                return (Image.Width / 2) * 0.8;
+            }
         }
 
         public override void KeyDown(KeyEventArgs e)
@@ -66,6 +104,18 @@ namespace GameTest2
                 mWantShoot = false;
             }
         }
+        public override void Initialize()
+        {
+            for(int i = 0; i < mHealth; i++)
+            {
+                AddHealth();
+                mRoomActionRequest(ERoomAction.AddObject, mLifes.Peek());
+            }
+        }
+        public void AddHealth()
+        {
+            mLifes.Push(new Life((BitmapFrame)Image.Source, 40, 30, new Point(Position.X * 2 - mLifes.Count * 50 - 20, Position.Y * 2 - 50), 270));
+        }
         public override void ClockTick()
         {
             //Rotation
@@ -102,12 +152,14 @@ namespace GameTest2
             }
             if (mWantShoot && mCanShoot)
             {
-                mAddObject(new BasicProjectile(16, 16, mProjectileBitmapFrame,
+                mRoomActionRequest(ERoomAction.AddObject, new BasicProjectile(16, 16, mProjectileBitmapFrame,
                     Position, mAngle, mProjectileSpeed));
 
                 mCanShoot = false;
                 mShootTicksRemaining = mShootTimeOutTicks;
             }
+
+            
         }
 
         public override EOutsideRoomAction OutsideRoomAction
@@ -117,8 +169,12 @@ namespace GameTest2
                 return EOutsideRoomAction.Return;
             }
         }
+        public double mHealth { get; set; }
 
         private BitmapFrame mProjectileBitmapFrame;
+        private BitmapFrame mExplosionFrame;
+
+        private Stack<Life> mLifes = new Stack<Life>();
 
         private double mAngle = -90;
         private const double cAngleChangeSpeed = 4;

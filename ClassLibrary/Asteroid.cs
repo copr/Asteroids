@@ -22,6 +22,7 @@ namespace GameTest2
 
             mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
             mCollisionBehavior.Add(typeof(BasicProjectile), DefaultCollisionSolve);
+            mCollisionBehavior.Add(typeof(Rocket), DefaultCollisionSolve);
 
             mInvincibleSteps = 4;
         }
@@ -31,10 +32,10 @@ namespace GameTest2
             if (Image.Width > 16)
             {
                 double lAngle = 360 * mRandom.NextDouble();
-                mAddObject(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                mRoomActionRequest(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
                     Position,
                     lAngle - 90 + mRandom.NextDouble() * 180, Speed));
-                mAddObject(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                mRoomActionRequest(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
                     Position,
                     lAngle + 180 - 90 + mRandom.NextDouble() * 180, Speed));
             }
@@ -59,7 +60,7 @@ namespace GameTest2
 
         public override void DestroyEffect()
         {
-            mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
             CreateChildren();
         }
 
