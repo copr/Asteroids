@@ -20,9 +20,9 @@ namespace GameTest2
             mRotationSpeed = lRandom.NextDouble() * 4 - 2;
             mExplosionFrame = aExplosionFrame;
 
-            mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
-            mCollisionBehavior.Add(typeof(BasicProjectile), DefaultCollisionSolve);
-            mCollisionBehavior.Add(typeof(Rocket), DefaultCollisionSolve);
+            mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
+            mCollisionBehavior.Add(typeof(BasicProjectile), CollisionSolve);
+            mCollisionBehavior.Add(typeof(Rocket), RocketCollisionSolve);
 
             mInvincibleSteps = 4;
         }
@@ -58,10 +58,26 @@ namespace GameTest2
             }
         }
 
+        public void RocketCollisionSolve(BasicObject o)
+        {
+            if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
+            {
+                DestroyEffect();
+                mRemoveObject(this);
+            }
+        }
+        public void CollisionSolve(BasicObject o)
+        {
+            if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
+            {
+                CreateChildren();
+                DestroyEffect();
+                mRemoveObject(this);
+            }
+        }
         public override void DestroyEffect()
         {
             mAddObject(new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
-            CreateChildren();
         }
 
         private double mAngle;

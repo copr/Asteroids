@@ -29,20 +29,35 @@ namespace GameTest2
             mProjectileBitmapFrame = aProjectileBitmapFrame;
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
-            mHealth = 5;
-            
+            mNumOfLifes = 3;
+            mEnergy = 20;
         }
 
         private void CollisionSolve(BasicObject o)
         {
             if (Distance(o) < CollisionRadius + o.CollisionRadius)
             {
-                mHealth--;
-                mRemoveObject(mLifes.Pop());
-                if (mHealth == 0)
+                double lEnergyRed = Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
+                mEnergy -= lEnergyRed;
+                DropEnergy((int)lEnergyRed);
+
+                if (mEnergy <= 0)
                 {
-                    DestroyEffect();
-                    GameOver();
+                    mEnergy = 20;
+                    mNumOfLifes--;                   
+                    if (mNumOfLifes < 0)
+                    {
+                        DestroyEffect();
+                        GameOver();
+                    }
+                    else
+                    {
+                        mRemoveObject(mLifes.Pop());
+                        AddEnergy();
+                    }
+                    Position = new Point(GameRoomWidth / 2, GameRoomHeight / 2);
+                    mVerticalSpeed = 0;
+                    mHorizontalSpeed = 0;
                 }
             }
         }
@@ -103,15 +118,38 @@ namespace GameTest2
         }
         public override void Initialize()
         {
-            for(int i = 0; i < mHealth; i++)
-            {
-                AddHealth();
-                mAddObject(mLifes.Peek());
-            }
+            AddHealth();
+            AddEnergy();
         }
         public void AddHealth()
         {
-            mLifes.Push(new Life((BitmapFrame)Image.Source, 40, 30, new Point(Position.X * 2 - mLifes.Count * 50 - 20, Position.Y * 2 - 50), 270));
+            for (int i = mLifes.Count; i < mNumOfLifes; i++)
+            {
+                mLifes.Push(new Life((BitmapFrame)Image.Source, 40, 30,
+                    new Point(GameRoomWidth - mLifes.Count * 50 - 20, GameRoomHeight - 50), 270));
+                mAddObject(mLifes.Peek());
+            }
+        }
+
+        public void AddEnergy()
+        {
+            for (int i = mEnergies.Count; i < mEnergy; i++)
+            {
+                mEnergies.Push(new Life((BitmapFrame)Image.Source, 20, 15,
+                    new Point(GameRoomWidth - mEnergies.Count * 15 - 15, GameRoomHeight - 20), 270));
+                mAddObject(mEnergies.Peek());
+            }
+        }
+
+        private void DropEnergy(int aDropped)
+        {
+            for (int i = 0; i < aDropped; i++)
+            {
+                if (mEnergies.Count != 0)
+                { 
+                    mRemoveObject(mEnergies.Pop());
+                }
+            }
         }
         public override void ClockTick()
         {
@@ -166,11 +204,14 @@ namespace GameTest2
                 return EOutsideRoomAction.Return;
             }
         }
-        public double mHealth { get; set; }
+        public int mNumOfLifes { get; set; }
+        public double mEnergy { get; set; }
+    
 
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionFrame;
 
+        private Stack<Life> mEnergies = new Stack<Life>();
         private Stack<Life> mLifes = new Stack<Life>();
 
         private double mAngle = -90;

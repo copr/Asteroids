@@ -29,7 +29,6 @@ namespace GameTest2
             mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
             mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
             mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
-            mLifeBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Rocket2"];
         }
 
         private void keyDown(object sender, KeyEventArgs e)
@@ -59,7 +58,7 @@ namespace GameTest2
         {
             if (mGameRunning)
             {
-                mGameRoom.ClockTick(this);
+                mGameRoom.ClockTick();
             }
                
         }
@@ -72,7 +71,7 @@ namespace GameTest2
 
 
             mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
-            mGameRoom.AsteroidChance = 0.02;
+            mGameRoom.AsteroidChance = 0.07;
 
             mClock = new Timer(ClockTick, null, 0, 10);
         }
@@ -84,7 +83,6 @@ namespace GameTest2
         private BitmapFrame mRocketBitmapFrame;
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionBitmapFrame;
-        private BitmapFrame mLifeBitmapFrame;
 
         private bool mGameRunning = true;
     }

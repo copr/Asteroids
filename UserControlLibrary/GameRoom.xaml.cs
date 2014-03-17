@@ -43,6 +43,8 @@ namespace UserControlLibrary
                 mAsteroids.Add(o);
             o.CreateObjectFunction = new BasicObject.ActionWithObject(AddRequest);
             o.RemoveObjectFunction = new BasicObject.ActionWithObject(RemoveRequest);
+            o.GameRoomHeight = RoomHeight;
+            o.GameRoomWidth = RoomWidth;
             o.Initialize();
         }
         public void AddRequest(BasicObject o)
@@ -92,14 +94,10 @@ namespace UserControlLibrary
                 }
             }
         }
-        public void ClockTick(Window aWindow)
+        public void ClockTick()
         {
             foreach (BasicObject o in mAllObjects)
-            {
-                if (o is Rocket)
-                {
-                    RocketHealth = (o as Rocket).mHealth;
-                }        
+            { 
                 o.ClockTick();                     
             }
             DealWithOutsideObjects();

@@ -126,7 +126,8 @@ namespace GameTest2
 
         }
 
-
+        public double GameRoomWidth { get; set; }
+        public double GameRoomHeight { get; set; }
 
         private BitmapFrame mBitmapFrame;
         private Image mImage;
@@ -138,7 +139,7 @@ namespace GameTest2
         private double mOutsideSize;
         protected int mInvincibleSteps = 10;
 
-        public delegate void ActionWithObject(BasicObject o);
+        public delegate void ActionWithObject(BasicObject o);     
 
         protected Dictionary<Type, ActionWithObject> mCollisionBehavior =
             new Dictionary<Type, ActionWithObject>();
