@@ -117,7 +117,8 @@ namespace GameTest2
             }
         }
 
-
+        public double GameRoomWidth { get; set; }
+        public double GameRoomHeight { get; set; }
 
         private BitmapFrame mBitmapFrame;
         private Image mImage;

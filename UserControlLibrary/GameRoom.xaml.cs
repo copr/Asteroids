@@ -40,7 +40,11 @@ namespace UserControlLibrary
             mCanvas.Children.Add(o.Image);
             mAllObjects.Add(o);
             if (o is Asteroid)
+            {
                 mAsteroids.Add(o);
+            }
+            o.GameRoomHeight = RoomHeight;
+            o.GameRoomWidth = RoomWidth;
 
             o.RoomActionFunction = new BasicObject.RoomActionRequest(InvokeAction);
             o.Initialize();
@@ -67,7 +71,7 @@ namespace UserControlLibrary
                 }
                 if (lGameOverRequest)
                     break;
-            }
+        }
             if (lGameOverRequest)
                 mControlActionRequest(EControlAction.GameOver, null);
 
@@ -116,10 +120,6 @@ namespace UserControlLibrary
         {
             foreach (BasicObject o in mAllObjects)
             {
-                if (o is Rocket)
-                {
-                    RocketHealth = (o as Rocket).mHealth;
-                }        
                 o.ClockTick();                     
             }
 
@@ -130,7 +130,7 @@ namespace UserControlLibrary
             {
                 AddObject(mAsteroidGenerator.CreateAsteroid());
             }
-
+         
             SolveRequests();
             Repaint();
         }
@@ -147,7 +147,7 @@ namespace UserControlLibrary
         public void InvokeAction(ERoomAction aAction, object arg)
         {
             mRequests.Add(new Tuple<ERoomAction, object>(aAction, arg));
-        }
+            }
         public void Reset()
         {
             mAsteroids.Clear();

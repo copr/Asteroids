@@ -61,9 +61,10 @@ namespace GameTest2
         private void UpdateObjects()
         {
             if (mGameRunning)
+            {
                 mGameRoom.ClockTick();
-        }
-
+            }
+        }  
         private void GameRoomLoaded(object sender, RoutedEventArgs e)
         {
 
@@ -82,7 +83,7 @@ namespace GameTest2
 
             mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
             mGameRoom.AsteroidChance = 0.04;
-            
+
             mGameRunning = true;
         }
 
