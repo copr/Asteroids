@@ -7,6 +7,6 @@ namespace GameTest2
 {
     public enum ERoomAction
     {
-        AddObject, RemoveObject, GameOver
+        AddObject, RemoveObject, GameOver, ChangeScore
     }
 }

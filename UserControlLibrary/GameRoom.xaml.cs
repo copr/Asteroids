@@ -66,6 +66,10 @@ namespace UserControlLibrary
                     case ERoomAction.GameOver:
                         lGameOverRequest = true;
                         break;
+                    case ERoomAction.ChangeScore:
+                        Rocket lRoc = (Rocket)request.Item2;
+                        ControlActionFunction(EControlAction.ChangeScore, lRoc);
+                        break;
                     default:
                         break;
                 }
@@ -178,7 +182,9 @@ namespace UserControlLibrary
                     || o.Position.Y < -o.OutsideSize)
                 {
                     if (o.OutsideRoomAction == EOutsideRoomAction.Destroy)
+                    {
                         lObjectsToRemove.Add(o);
+                    }
                     else if (o.OutsideRoomAction == EOutsideRoomAction.Return)
                     {
                         ReturnObjectFromOutside(o);
@@ -242,10 +248,14 @@ namespace UserControlLibrary
             {
                 mControlActionRequest = value;
             }
+            get
+            {
+                return mControlActionRequest;
+            }
         }
 
-        private HashSet<BasicObject> mAllObjects = new HashSet<BasicObject>();
-        private HashSet<BasicObject> mAsteroids = new HashSet<BasicObject>();
+        private List<BasicObject> mAllObjects = new List<BasicObject>(); //Proc to 
+        private HashSet<BasicObject> mAsteroids = new HashSet<BasicObject>(); // jsou hashsety?
 
         private List<Tuple<ERoomAction, object>> mRequests = new List<Tuple<ERoomAction, object>>();
 

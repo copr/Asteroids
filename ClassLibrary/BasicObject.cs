@@ -24,8 +24,6 @@ namespace GameTest2
             mOutsideSize = Math.Min(mImage.Width, mImage.Height) / 2;
 
             mPosition = aPosition;
-
-            
         }
         public void RotateImage(double aAngle)
         {
@@ -105,6 +103,10 @@ namespace GameTest2
             set
             {
                 mRoomActionRequest = value;
+            }
+            get
+            {
+                return mRoomActionRequest;
             }
         }
 

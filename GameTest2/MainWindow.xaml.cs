@@ -32,7 +32,7 @@ namespace GameTest2
 
             mGameRoom.ControlActionFunction = new UserControlLibrary.GameRoom.ControlActionRequest(InvokeAction);
 
-            mClock = new Timer(ClockTick, null, 0, 10);
+            mClock = new Timer(ClockTick, null, 0, 10); //magic numbers 
         }
 
         private void keyDown(object sender, KeyEventArgs e)
@@ -82,7 +82,7 @@ namespace GameTest2
                 new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl }));
 
             mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
-            mGameRoom.AsteroidChance = 0.04;
+            mGameRoom.AsteroidChance = 0.04; //magic number
 
             mGameRunning = true;
         }
@@ -95,6 +95,10 @@ namespace GameTest2
                     mGameRoom.Reset();
                     mGameRunning = false;
                     mStartGameButton.Visibility = System.Windows.Visibility.Visible;
+                    break;
+                case EControlAction.ChangeScore:
+                    Rocket lRoc = (Rocket)arg;
+                    mScoreLabel.Content = "Score: " + lRoc.mScore;
                     break;
                 default:
                     break;

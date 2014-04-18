@@ -55,7 +55,7 @@ namespace GameTest2
                     {
                         mRoomActionRequest(ERoomAction.RemoveObject, mLifes.Pop());
                         AddEnergy();
-                        mInvincibleSteps = 300;
+                        mInvincibleSteps = 150;
                     }
                     Position = new Point(GameRoomWidth / 2, GameRoomHeight / 2);
                     mVerticalSpeed = 0;
@@ -156,6 +156,8 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
+            RoomActionFunction(ERoomAction.ChangeScore, this);
+            mScore = mScore;
             //Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
             RotateImage(mAngle);
@@ -191,7 +193,11 @@ namespace GameTest2
 
             Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
 
-            //Shooting
+            Shooting(); 
+        }
+
+        private void Shooting()
+        {
             if (mShootTicksRemaining == 0)
             {
                 mCanShoot = true;
@@ -203,13 +209,11 @@ namespace GameTest2
             if (mWantShoot && mCanShoot)
             {
                 mRoomActionRequest(ERoomAction.AddObject, new BasicProjectile(16, 16, mProjectileBitmapFrame,
-                    Position, mAngle, mProjectileSpeed));
+                    Position, mAngle, mProjectileSpeed, this));
 
                 mCanShoot = false;
                 mShootTicksRemaining = mShootTimeOutTicks;
             }
-
-            
         }
 
         public override EOutsideRoomAction OutsideRoomAction
@@ -221,7 +225,7 @@ namespace GameTest2
         }
         public int mNumOfLifes { get; set; }
         public double mEnergy { get; set; }
-    
+        public double mScore { get; set; }
 
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionFrame;
@@ -241,7 +245,7 @@ namespace GameTest2
 
         private bool mWantShoot = false;
         private bool mCanShoot = true;
-        private int mShootTimeOutTicks = 1;
+        private int mShootTimeOutTicks = 10;
         private int mShootTicksRemaining;
         private double mProjectileSpeed = 16;
     }

@@ -7,6 +7,6 @@ namespace GameTest2
 {
     public enum EControlAction
     {
-        GameOver
+        GameOver, ChangeScore
     }
 }
