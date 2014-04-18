@@ -31,11 +31,12 @@ namespace GameTest2
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
             mNumOfLifes = 3;
             mEnergy = 20;
+            mInvincibleSteps = 0;
         }
 
         private void CollisionSolve(BasicObject o)
         {
-            if (Distance(o) < CollisionRadius + o.CollisionRadius)
+            if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
             {
                 double lEnergyRed = Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
                 mEnergy -= lEnergyRed;
@@ -47,18 +48,19 @@ namespace GameTest2
                     mNumOfLifes--;                   
                     if (mNumOfLifes < 0)
                     {
-                    DestroyEffect();
-                    GameOver();
-                }
+                        DestroyEffect();
+                        GameOver();
+                    }
                     else
                     {
                         mRoomActionRequest(ERoomAction.RemoveObject, mLifes.Pop());
                         AddEnergy();
-            }
+                        mInvincibleSteps = 300;
+                    }
                     Position = new Point(GameRoomWidth / 2, GameRoomHeight / 2);
                     mVerticalSpeed = 0;
                     mHorizontalSpeed = 0;
-        }
+               }
             }
         }
         private void GameOver()
@@ -161,6 +163,18 @@ namespace GameTest2
             //Translation
             mVerticalSpeed += mAcceleration * mAccelerationSign * Math.Sin(mAngle * Math.PI / 180);
             mHorizontalSpeed += mAcceleration * mAccelerationSign * Math.Cos(mAngle * Math.PI / 180);
+
+            if(mInvincibleSteps % 5 == 0)
+            {
+                Image.Visibility = Visibility.Visible;   
+            } else
+            {
+                Image.Visibility = Visibility.Hidden;
+            }
+            if (mInvincibleSteps > 0)
+            {
+                mInvincibleSteps--;
+            }
 
             double lTotalSpeed = Math.Sqrt(mHorizontalSpeed * mHorizontalSpeed + mVerticalSpeed * mVerticalSpeed);
             if (lTotalSpeed > mMaxSpeed)
