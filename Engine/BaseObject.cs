@@ -67,6 +67,7 @@ namespace Engine
         
         public event RoomActionRequest RoomActionEvent;
         public event Destruction DestroyedEvent;
+        public event Destruction HitEvent; //
 
         #endregion
         #region Delegates

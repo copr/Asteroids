@@ -8,6 +8,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using Engine;
+using System.IO;
 
 namespace GameTest2
 {
@@ -42,9 +43,6 @@ namespace GameTest2
             lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
                 Position,
                 lAngle - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
-            RaiseRoomActionEvent(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
-                Position,
-                lAngle + 180 - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
 
             foreach (Asteroid a in lChildren)
             {
