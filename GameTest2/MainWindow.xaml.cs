@@ -66,7 +66,7 @@ namespace GameTest2
                 new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
 
             AsteroidGenerator lGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
-            lGenerator.Chance = 0.03;
+            lGenerator.Chance = 0.01;
 
             mGameRoom.InvokeAction(ERoomAction.AddObject, lRocket);
             mGameRoom.InvokeAction(ERoomAction.AddObject, lGenerator);
