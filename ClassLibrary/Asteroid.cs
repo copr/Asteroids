@@ -94,13 +94,6 @@ namespace GameTest2
                 }
             }
         }
-
-        public override void Destroy()
-        {
-            base.Destroy();
-            RaiseDestroyedEvent();
-        }
-
         protected override void DestroyEffect()
         {
             RaiseRoomActionEvent(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
