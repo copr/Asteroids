@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Threading;
 
+using Engine;
+
 namespace GameTest2
 {
     public class Rocket : ControllableMovingObject
@@ -20,55 +22,70 @@ namespace GameTest2
         /// <param name="aWidth"></param>
         /// <param name="aHeight"></param>
         /// <param name="aPosition"></param>
-        /// <param name="aKeys">Up, Down, Left, Right, Shoot</param>
-        public Rocket(BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame
-            , BitmapFrame aExplosionFrame, double aWidth, double aHeight
-            , Point aPosition, List<Key> aKeys)
+        /// <param name="aKeys">Up, Down, Left, Right, Gun shoot, Missile shoot</param>
+        public Rocket(
+            BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame,
+            BitmapFrame aMissileBitmapFrame,
+            BitmapFrame aExplosionFrame, double aWidth, double aHeight,
+            Point aPosition, List<Key> aKeys)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
-            mProjectileBitmapFrame = aProjectileBitmapFrame;
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
-            mNumOfLifes = 3;
-            mEnergy = 20;
+            NumOfLives = 3;
+            Energy = 20;
+
+            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame);
+            mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
+        }
+        public override void Initialize()
+        {
+            InitializeHealth();
+            InitializeEnergy();
+
+            RaiseRoomActionEvent(ERoomAction.AddObject, mPrimaryGun);
+            RaiseRoomActionEvent(ERoomAction.AddObject, mMissileLauncher);
         }
 
-        private void CollisionSolve(BasicObject o)
+        private void CollisionSolve(PhysicalObject o)
         {
             if (Distance(o) < CollisionRadius + o.CollisionRadius)
             {
-                double lEnergyRed = Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
-                mEnergy -= lEnergyRed;
-                DropEnergy((int)lEnergyRed);
+                int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
+                
+                Energy -= lEnergyLoss;
+                DropEnergy((int)lEnergyLoss);
 
-                if (mEnergy <= 0)
+                if (Energy <= 0)
                 {
-                    mEnergy = 20;
-                    mNumOfLifes--;                   
-                    if (mNumOfLifes < 0)
+                    Energy = 20;
+                    NumOfLives--;
+                    if (NumOfLives < 0)
                     {
-                    DestroyEffect();
-                    GameOver();
-                }
+                        Destroy();
+                        DestroyEffect();
+                        GameOver();
+                    }
                     else
                     {
-                        mRoomActionRequest(ERoomAction.RemoveObject, mLifes.Pop());
-                        AddEnergy();
-            }
-                    Position = new Point(GameRoomWidth / 2, GameRoomHeight / 2);
+                        RaiseRoomActionEvent(ERoomAction.RemoveObject, mLives.Pop());
+                        mAngle = -90;
+                        InitializeEnergy();
+                        DestroyEffect();
+                    }
+                    Position = new Point(GameRoom.RoomWidth / 2, GameRoom.RoomHeight / 2);
                     mVerticalSpeed = 0;
                     mHorizontalSpeed = 0;
-        }
+                }
             }
         }
         private void GameOver()
         {
-            mRoomActionRequest(ERoomAction.RemoveObject, this);
-            mRoomActionRequest(ERoomAction.GameOver, null);
+            RaiseRoomActionEvent(ERoomAction.GameOver, null);
         }
-        public override void DestroyEffect()
+        protected override void DestroyEffect()
         {
-            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Width, Position));
+            RaiseRoomActionEvent(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Width, Position));
         }
         public override double CollisionRadius
         {
@@ -96,10 +113,13 @@ namespace GameTest2
             {
                 mAngleChangeSign = 1;
             }
-
             if (e.Key == mKeys[4])
             {
-                mWantShoot = true;
+                mWantShootGun = true;
+            }
+            if (e.Key == mKeys[5])
+            {
+                mWantShootMissile = true;
             }
         }
         public override void KeyUp(KeyEventArgs e)
@@ -114,31 +134,30 @@ namespace GameTest2
             }
             if (e.Key == mKeys[4])
             {
-                mWantShoot = false;
+                mWantShootGun = false;
+            }
+            if (e.Key == mKeys[5])
+            {
+                mWantShootMissile = false;
             }
         }
-        public override void Initialize()
+        private void InitializeHealth()
         {
-            AddHealth();
-            AddEnergy();
-        }
-        public void AddHealth()
-        {
-            for (int i = mLifes.Count; i < mNumOfLifes; i++)
+            for (int i = mLives.Count; i < NumOfLives; i++)
             {
-                mLifes.Push(new Life((BitmapFrame)Image.Source, 40, 30,
-                    new Point(GameRoomWidth - mLifes.Count * 50 - 20, GameRoomHeight - 50), 270));
-                mRoomActionRequest(ERoomAction.AddObject, mLifes.Peek());
+                mLives.Push(new Life((BitmapFrame)Image.Source, 40, 30,
+                    new Point(GameRoom.RoomWidth - mLives.Count * 50 - 20, GameRoom.RoomHeight - 50), 270));
+                RaiseRoomActionEvent(ERoomAction.AddObject, mLives.Peek());
             }
         }
 
-        public void AddEnergy()
+        private void InitializeEnergy()
         {
-            for (int i = mEnergies.Count; i < mEnergy; i++)
+            for (int i = mEnergies.Count; i < Energy; i++)
             {
                 mEnergies.Push(new Life((BitmapFrame)Image.Source, 20, 15,
-                    new Point(GameRoomWidth - mEnergies.Count * 15 - 15, GameRoomHeight - 20), 270));
-                mRoomActionRequest(ERoomAction.AddObject, mEnergies.Peek());
+                    new Point(GameRoom.RoomWidth - mEnergies.Count * 15 - 15, GameRoom.RoomHeight - 20), 270));
+                RaiseRoomActionEvent(ERoomAction.AddObject, mEnergies.Peek());
             }
         }
 
@@ -148,7 +167,7 @@ namespace GameTest2
             {
                 if (mEnergies.Count != 0)
                 {
-                    mRoomActionRequest(ERoomAction.RemoveObject, mEnergies.Pop());
+                    RaiseRoomActionEvent(ERoomAction.RemoveObject, mEnergies.Pop());
                 }
             }
         }
@@ -178,24 +197,20 @@ namespace GameTest2
             Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
 
             //Shooting
-            if (mShootTicksRemaining == 0)
-            {
-                mCanShoot = true;
-            }
-            if (mShootTicksRemaining > 0)
-            {
-                mShootTicksRemaining--;
-            }
-            if (mWantShoot && mCanShoot)
-            {
-                mRoomActionRequest(ERoomAction.AddObject, new BasicProjectile(16, 16, mProjectileBitmapFrame,
-                    Position, mAngle, mProjectileSpeed));
+            mPrimaryGun.Position = this.Position;
+            mPrimaryGun.AimDirection = this.mAngle;
 
-                mCanShoot = false;
-                mShootTicksRemaining = mShootTimeOutTicks;
-            }
-
+            mMissileLauncher.Position = this.Position;
+            mMissileLauncher.AimDirection = this.mAngle;
             
+            if (mWantShootGun)
+            {
+                mPrimaryGun.ShootRequest();
+            } 
+            if (mWantShootMissile)
+            {
+                mMissileLauncher.ShootRequest();
+            }
         }
 
         public override EOutsideRoomAction OutsideRoomAction
@@ -205,18 +220,16 @@ namespace GameTest2
                 return EOutsideRoomAction.Return;
             }
         }
-        public int mNumOfLifes { get; set; }
-        public double mEnergy { get; set; }
+        public int NumOfLives { get; private set; }
+        public int Energy { get; private set; }
     
-
-        private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionFrame;
 
         private Stack<Life> mEnergies = new Stack<Life>();
-        private Stack<Life> mLifes = new Stack<Life>();
+        private Stack<Life> mLives = new Stack<Life>();
 
         private double mAngle = -90;
-        private const double cAngleChangeSpeed = 4;
+        private double cAngleChangeSpeed = 4;
         private double mAngleChangeSign = 0;
 
         private double mHorizontalSpeed = 0;
@@ -225,10 +238,10 @@ namespace GameTest2
         private double mAccelerationSign = 0;
         private double mMaxSpeed = 8;
 
-        private bool mWantShoot = false;
-        private bool mCanShoot = true;
-        private int mShootTimeOutTicks = 1;
-        private int mShootTicksRemaining;
-        private double mProjectileSpeed = 16;
+        private bool mWantShootGun = false; 
+        private bool mWantShootMissile = false;
+
+        private PrimaryGun mPrimaryGun;
+        private MissileLauncher mMissileLauncher;
     }
 }

@@ -5,9 +5,11 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
+using Engine;
+
 namespace GameTest2
 {
-    public class Explosion : BasicObject
+    public class Explosion : PhysicalObject
     {
         public Explosion(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition)
             : base(aBitmapFrame, aWidth, aHeight, aPosition)

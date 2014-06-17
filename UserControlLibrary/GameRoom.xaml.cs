@@ -12,56 +12,120 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Timers;
 
-using GameTest2;
+using Engine;
 
-namespace UserControlLibrary
+namespace EngineGui
 {
     /// <summary>
     /// Interaction logic for UserControl1.xaml
     /// </summary>
-    public partial class GameRoom : UserControl
+    public partial class GameRoom : UserControl, IGameRoom
     {
+        #region Constructor
+
         public GameRoom()
         {
             InitializeComponent();
             mCanvas.ClipToBounds = true;
-        }
-        public void Repaint()
-        {
-            foreach (BasicObject o in mAllObjects)
-            {
-                Canvas.SetLeft(o.Image, o.Position.X - o.Image.Width / 2);
-                Canvas.SetTop(o.Image, o.Position.Y - o.Image.Height / 2);
-            }
-        }
-        public void AddObject(BasicObject o)
-        {
-            mCanvas.Children.Add(o.Image);
-            mAllObjects.Add(o);
-            if (o is Asteroid)
-            {
-                mAsteroids.Add(o);
-            }
-            o.GameRoomHeight = RoomHeight;
-            o.GameRoomWidth = RoomWidth;
-
-            o.RoomActionFunction = new BasicObject.RoomActionRequest(InvokeAction);
-            o.Initialize();
+            mClock.Elapsed += new ElapsedEventHandler(ClockTick);
+            mClock.AutoReset = true;
+            mClock.Interval = mClockInterval;
         }
 
-        public void SolveRequests()
+        #endregion
+        #region Public methods
+
+        public void Run()
+        {
+            mClock.Start();
+            mIsRunning = true;
+        }
+        public void Stop()
+        {
+            mClock.Stop();
+            mIsRunning = false;
+        }
+        public void InvokeAction(ERoomAction aAction, object arg)
+        {
+            lock (mRequests)
+            {
+                mRequests.Add(new Tuple<ERoomAction, object>(aAction, arg));
+            }
+        }
+        public new void KeyDown(KeyEventArgs e)
+        {
+            foreach (ControllableMovingObject o in mObjects.OfType<ControllableMovingObject>())
+            {
+                o.KeyDown(e);
+            }
+        }
+        public new void KeyUp(KeyEventArgs e)
+        {
+            foreach (ControllableMovingObject o in mObjects.OfType<ControllableMovingObject>())
+            {
+                o.KeyUp(e);
+            }
+        }
+        public void Reset()
+        {
+            mObjects.Clear();
+            mRequests.Clear();
+            mCanvas.Children.Clear();
+        }
+        public IEnumerable<T> GetObjectsOfType<T>()
+        {
+            return mObjects.OfType<T>();
+        }
+
+        #endregion
+        #region Protected methods
+
+        protected void RaiseControlActionEvent(EControlAction aAction, object arg)
+        {
+            if (ControlActionEvent != null)
+            {
+                ControlActionEvent(aAction, arg);
+            }
+        }
+
+        #endregion
+        #region Private methods
+
+        private void ClockTick(object arg, ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                foreach (BaseObject o in mObjects)
+                {
+                    if (!o.IsDestroyed)
+                    {
+                        o.ClockTick();
+                    }
+                }
+
+                DealWithOutsideObjects();
+                SolveCollisions();
+                SolveRequests();
+                Repaint();
+            }), null);
+        }
+        private void SolveRequests()
         {
             bool lGameOverRequest = false;
-            foreach (Tuple<ERoomAction, object> request in mRequests)
+
+            var lRequestsSoFar = mRequests.ToList();
+
+            foreach (Tuple<ERoomAction, object> request in lRequestsSoFar)
             {
                 switch (request.Item1)
                 {
                     case ERoomAction.AddObject:
-                        AddObject((BasicObject)request.Item2);
+                        AddObject((BaseObject)request.Item2);
                         break;
                     case ERoomAction.RemoveObject:
-                        RemoveObject((BasicObject)request.Item2);
+                        RemoveObject((BaseObject)request.Item2);
                         break;
                     case ERoomAction.GameOver:
                         lGameOverRequest = true;
@@ -69,15 +133,57 @@ namespace UserControlLibrary
                     default:
                         break;
                 }
-                if (lGameOverRequest)
-                    break;
-        }
+            }
             if (lGameOverRequest)
-                mControlActionRequest(EControlAction.GameOver, null);
+            {
+                RaiseControlActionEvent(EControlAction.GameOver, null);
+            }
 
-            mRequests.Clear();
+            mRequests.RemoveAll(x => lRequestsSoFar.Contains(x));
         }
-        private void ReturnObjectFromOutside(BasicObject o)
+        private void AddObject(BaseObject o)
+        {
+            if (o is PhysicalObject)
+            {
+                mCanvas.Children.Add(((PhysicalObject)o).Image);
+            }
+
+            o.GameRoom = this;
+            mObjects.Add(o);
+            o.RoomActionEvent += InvokeAction;
+            o.Initialize();
+        }
+        private void Repaint()
+        {
+            foreach (PhysicalObject o in mObjects.OfType<PhysicalObject>())
+            {
+                Canvas.SetLeft(o.Image, o.Position.X - o.Image.Width / 2);
+                Canvas.SetTop(o.Image, o.Position.Y - o.Image.Height / 2);
+            }
+        }
+        private void DealWithOutsideObjects()
+        {
+            foreach (BaseObject o in mObjects)
+            {
+                if (o is PhysicalObject)
+                {
+                    PhysicalObject po = (PhysicalObject)o;
+                    if (po.Position.X > RoomWidth + po.OutsideSize
+                        || po.Position.X < -po.OutsideSize
+                        || po.Position.Y > RoomHeight + po.OutsideSize
+                        || po.Position.Y < -po.OutsideSize)
+                    {
+                        if (po.OutsideRoomAction == EOutsideRoomAction.Destroy)
+                            po.Destroy();
+                        else if (po.OutsideRoomAction == EOutsideRoomAction.Return)
+                        {
+                            ReturnObjectFromOutside(po);
+                        }
+                    }
+                }
+            }
+        }
+        private void ReturnObjectFromOutside(PhysicalObject o)
         {
             if (o.Position.X > RoomWidth + o.OutsideSize)
             {
@@ -96,18 +202,20 @@ namespace UserControlLibrary
                 o.Position = new Point(o.Position.X, RoomHeight + o.OutsideSize);
             }
         }
-        public void RemoveObject(BasicObject o)
+        private void RemoveObject(BaseObject o)
         {
-            mCanvas.Children.Remove(o.Image);
-            mAllObjects.Remove(o);
-            if (o is Asteroid)
-                mAsteroids.Remove(o);
+            if (o is PhysicalObject)
+            {
+                PhysicalObject po = (PhysicalObject)o;
+                mCanvas.Children.Remove(po.Image);
+            }
+            mObjects.Remove(o);
         }
         private void SolveCollisions()
         {
-            foreach (BasicObject o1 in mAllObjects)
+            foreach (PhysicalObject o1 in mObjects.OfType<PhysicalObject>())
             {
-                foreach (BasicObject o2 in mAllObjects)
+                foreach (PhysicalObject o2 in mObjects.OfType<PhysicalObject>())
                 {
                     if (o1 != o2)
                     {
@@ -116,83 +224,10 @@ namespace UserControlLibrary
                 }
             }
         }
-        public void ClockTick()
-        {
-            foreach (BasicObject o in mAllObjects)
-            {
-                o.ClockTick();                     
-            }
 
-            DealWithOutsideObjects();
-            SolveCollisions();
-            
-            if (mRandom.NextDouble() < AsteroidChance && mAsteroidGenerator != null)
-            {
-                AddObject(mAsteroidGenerator.CreateAsteroid());
-            }
-         
-            SolveRequests();
-            Repaint();
-        }
-        public new void KeyDown(KeyEventArgs e)
-        {
-            foreach (BasicObject o in mAllObjects)
-            {
-                if (o is ControllableMovingObject)
-                {
-                    (o as ControllableMovingObject).KeyDown(e);
-                }
-            }
-        }
-        public void InvokeAction(ERoomAction aAction, object arg)
-        {
-            mRequests.Add(new Tuple<ERoomAction, object>(aAction, arg));
-            }
-        public void Reset()
-        {
-            mAsteroids.Clear();
-            mAllObjects.Clear();
-            mRequests.Clear();
-            mCanvas.Children.Clear();
-            mAsteroidGenerator = null;
-        }
-        public new void KeyUp(KeyEventArgs e)
-        {
-            foreach (BasicObject o in mAllObjects)
-            {
-                if (o is ControllableMovingObject)
-                {
-                    (o as ControllableMovingObject).KeyUp(e);
-                }
-            }
-        }
-        private void DealWithOutsideObjects()
-        {
-            List<BasicObject> lObjectsToRemove = new List<BasicObject>();
+        #endregion
+        #region Properties
 
-            foreach (BasicObject o in mAllObjects)
-            {
-                if (o.Position.X > RoomWidth + o.OutsideSize
-                    || o.Position.X < -o.OutsideSize
-                    || o.Position.Y > RoomHeight + o.OutsideSize
-                    || o.Position.Y < -o.OutsideSize)
-                {
-                    if (o.OutsideRoomAction == EOutsideRoomAction.Destroy)
-                        lObjectsToRemove.Add(o);
-                    else if (o.OutsideRoomAction == EOutsideRoomAction.Return)
-                    {
-                        ReturnObjectFromOutside(o);
-                    }
-                }
-
-            }
-            
-            foreach (BasicObject o in lObjectsToRemove)
-            {
-                RemoveObject(o);
-            }
-        }
-        
         public double RoomWidth
         {
             get
@@ -207,53 +242,33 @@ namespace UserControlLibrary
                 return mCanvas.ActualHeight;
             }
         }
-
-        public double RocketHealth { get; set; }
-        public AsteroidGenerator AsteroidGenerator
+        public bool IsRunning
         {
             get
             {
-                return mAsteroidGenerator;
-            }
-            set
-            {
-                mAsteroidGenerator = value;
-                if (mAsteroidGenerator != null)
-                {
-                    mAsteroidGenerator.RoomHeight = RoomHeight;
-                    mAsteroidGenerator.RoomWidth = RoomWidth;
-                }
-            }
-        }
-        public double AsteroidChance
-        {
-            get;
-            set;
-        }
-        public double MaxAsteroidCount
-        { 
-            get;
-            set;
-        }
-
-        public ControlActionRequest ControlActionFunction
-        {
-            set
-            {
-                mControlActionRequest = value;
+                return mIsRunning;
             }
         }
 
-        private HashSet<BasicObject> mAllObjects = new HashSet<BasicObject>();
-        private HashSet<BasicObject> mAsteroids = new HashSet<BasicObject>();
+        #endregion
+        #region Events
 
+        public event ControlActionRequest ControlActionEvent;
+
+        #endregion
+        #region Members
+        private Timer mClock = new Timer();
+        private HashSet<BaseObject> mObjects = new HashSet<BaseObject>();
         private List<Tuple<ERoomAction, object>> mRequests = new List<Tuple<ERoomAction, object>>();
-
-        private AsteroidGenerator mAsteroidGenerator;
         private Random mRandom = new Random();
-
-        private ControlActionRequest mControlActionRequest;
+        private bool mIsRunning = false;
+        private int mClockInterval = 10;
+        #endregion
+        #region Delegates
 
         public delegate void ControlActionRequest(EControlAction aAction, object arg);
+
+        #endregion
+
     }
 }

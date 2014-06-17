@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
+using Engine;
+
 namespace GameTest2
 {
     public class BasicProjectile : SimpleMovingObject
@@ -23,6 +25,7 @@ namespace GameTest2
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aVerticalSpeed, aHorizontalSpeed)
         {
             mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
+            Depth = -10;
         }
         public override void ClockTick()
         {

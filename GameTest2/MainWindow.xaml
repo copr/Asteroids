@@ -1,12 +1,12 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:a ="clr-namespace:UserControlLibrary;assembly=UserControlLibrary"
+        xmlns:a ="clr-namespace:EngineGui;assembly=EngineGui"
         xmlns:local="clr-namespace:GameTest2" x:Class="GameTest2.MainWindow"
         Title="MainWindow" Height="600" Width="800" KeyDown="keyDown" KeyUp="keyUp"
         Background="DodgerBlue" ResizeMode="NoResize" Name="MainWindowName">
     <Grid>
-        <a:GameRoom Name="mGameRoom" Loaded="GameRoomLoaded" HorizontalAlignment="Left" Width="572" Height="572" VerticalAlignment="Top"/>
+        <a:GameRoom Name="mGameRoom" HorizontalAlignment="Left" Width="572" Height="572" VerticalAlignment="Top"/>
         <Button Name="mStartGameButton" Content="Start new game" HorizontalAlignment="Left" Height="68" Margin="216,263,0,0" VerticalAlignment="Top" Width="148" Click="mStartGameButton_Click"/>
     </Grid>
     <Window.Resources>

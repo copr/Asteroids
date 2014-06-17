@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
+using Engine;
+
 namespace GameTest2
 {
     public class Asteroid : SimpleMovingObject
@@ -20,24 +22,33 @@ namespace GameTest2
             mRotationSpeed = lRandom.NextDouble() * 4 - 2;
             mExplosionFrame = aExplosionFrame;
 
-            mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
-            mCollisionBehavior.Add(typeof(BasicProjectile), CollisionSolve);
-            mCollisionBehavior.Add(typeof(Rocket), RocketCollisionSolve);
+            mCollisionBehavior.Add(typeof(Asteroid), DestroyWithChildren);
+            mCollisionBehavior.Add(typeof(BasicProjectile), DestroyWithChildren);
+            mCollisionBehavior.Add(typeof(GuidedMissile), DestroyWithoutChildren);
+            mCollisionBehavior.Add(typeof(Rocket), DestroyWithoutChildren);
 
-            mInvincibleSteps = 4;
+            mInvincibleSteps = 20;
         }
 
-        public void CreateChildren()
+        private void CreateChildren()
         {
-            if (Image.Width > 16)
+            double lAngle = 360 * mRandom.NextDouble();
+
+            List<Asteroid> lChildren = new List<Asteroid>();
+
+            lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                Position,
+                lAngle - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
+            lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                Position,
+                lAngle - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
+            RaiseRoomActionEvent(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                Position,
+                lAngle + 180 - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
+
+            foreach (Asteroid a in lChildren)
             {
-                double lAngle = 360 * mRandom.NextDouble();
-                mRoomActionRequest(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
-                    Position,
-                    lAngle - 90 + mRandom.NextDouble() * 180, Speed));
-                mRoomActionRequest(ERoomAction.AddObject, new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
-                    Position,
-                    lAngle + 180 - 90 + mRandom.NextDouble() * 180, Speed));
+                RaiseRoomActionEvent(ERoomAction.AddObject, a);
             }
         }
 
@@ -58,27 +69,41 @@ namespace GameTest2
             }
         }
 
-        public void RocketCollisionSolve(BasicObject o)
+        private void DestroyWithoutChildren(PhysicalObject o)
         {
             if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
             {
+                Destroy();
                 DestroyEffect();
-                mRoomActionRequest(ERoomAction.RemoveObject, this);
             }
         }
-        public void CollisionSolve(BasicObject o)
+        private void DestroyWithChildren(PhysicalObject o)
         {
             if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
             {
-                CreateChildren();
-                DestroyEffect();
-                mRoomActionRequest(ERoomAction.RemoveObject, this);
+                if (Image.Width > 16)
+                {
+                    Destroy();
+                    DestroyEffect();
+                    CreateChildren();
+                }
+                else
+                {
+                    Destroy();
+                    DestroyEffect();
+                }
             }
         }
-        public override void DestroyEffect()
+
+        public override void Destroy()
         {
-            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
-            mRoomActionRequest(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
+            base.Destroy();
+            RaiseDestroyedEvent();
+        }
+
+        protected override void DestroyEffect()
+        {
+            RaiseRoomActionEvent(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
         }
 
         private double mAngle;

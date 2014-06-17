@@ -148,17 +148,21 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary\ClassLibrary.csproj">
+    <ProjectReference Include="..\ClassLibrary\GameLibrary.csproj">
       <Project>{10579da8-53d2-4aa1-9bc9-26621d252a8e}</Project>
-      <Name>ClassLibrary</Name>
+      <Name>GameLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Engine\Engine.csproj">
+      <Project>{03d38e11-2997-44cb-ace5-720fa6654489}</Project>
+      <Name>Engine</Name>
     </ProjectReference>
     <ProjectReference Include="..\ResourcesProject\ResourcesProject.csproj">
       <Project>{4e85c3f4-2f79-4f50-b74a-359d6a7fefe2}</Project>
       <Name>ResourcesProject</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UserControlLibrary\UserControlLibrary.csproj">
+    <ProjectReference Include="..\UserControlLibrary\EngineGui.csproj">
       <Project>{04d595b0-81d2-4e42-b705-60e36059717d}</Project>
-      <Name>UserControlLibrary</Name>
+      <Name>EngineGui</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

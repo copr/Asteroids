@@ -7,17 +7,37 @@ using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 using System.Windows;
 
+using Engine;
+
 namespace GameTest2
 {
-    public class AsteroidGenerator
+    public class AsteroidGenerator : BaseObject
     {
+        public AsteroidGenerator()
+            : this(0)
+        {
+
+        }
+        public AsteroidGenerator(double aChance)
+        {
+            Chance = aChance;
+        }
+        public override void ClockTick()
+        {
+            double lRandom = mRandom.NextDouble();
+
+            if (lRandom < Chance)
+            {
+                RaiseRoomActionEvent(ERoomAction.AddObject, CreateAsteroid());
+            }
+        }
         public AsteroidGenerator(BitmapFrame aAsteroidBitmapFrame, BitmapFrame aExplosionBitmapFrame)
         {
             mAsteroidBitmapFrame = aAsteroidBitmapFrame;
             mExplosionBitmapFrame = aExplosionBitmapFrame;
             AsteroidSize = 64;
         }
-        public Asteroid CreateAsteroid()
+        private Asteroid CreateAsteroid()
         {
             int lAsteroidX = 0;
             int lAsteroidY = 0;
@@ -26,7 +46,7 @@ namespace GameTest2
             //left /right
             if (mRandom.Next(2) == 0)
             {
-                lAsteroidY = mRandom.Next((int)RoomHeight);
+                lAsteroidY = mRandom.Next((int)GameRoom.RoomHeight);
                 //left
                 if (mRandom.Next(2) == 0)
                 {
@@ -35,13 +55,13 @@ namespace GameTest2
                 }
                 else//right
                 {
-                    lAsteroidX = (int)RoomWidth + AsteroidSize / 2;
+                    lAsteroidX = (int)GameRoom.RoomWidth + AsteroidSize / 2;
                     lDirection = 90 + mRandom.Next(181);
                 }
             }
             else//top/bottom
             {
-                lAsteroidX = mRandom.Next((int)RoomWidth);
+                lAsteroidX = mRandom.Next((int)GameRoom.RoomWidth);
                 //top
                 if (mRandom.Next(2) == 0)
                 {
@@ -50,24 +70,14 @@ namespace GameTest2
                 }
                 else//bottom
                 {
-                    lAsteroidY = (int)RoomHeight + AsteroidSize / 2;
+                    lAsteroidY = (int)GameRoom.RoomHeight + AsteroidSize / 2;
                     lDirection = 180 + mRandom.Next(181);
                 }
             }
 
             return new Asteroid(mAsteroidBitmapFrame, mExplosionBitmapFrame, AsteroidSize,
                 new Point(lAsteroidX, lAsteroidY),
-                lDirection, mRandom.NextDouble() * 5 + 1);
-        }
-        public double RoomWidth
-        {
-            get;
-            set;
-        }
-        public double RoomHeight
-        {
-            get;
-            set;
+                lDirection, mRandom.NextDouble() * 3 + 1);
         }
         public int AsteroidSize
         {
@@ -75,8 +85,14 @@ namespace GameTest2
             set;
         }
 
-        private Random mRandom = new Random();
+        public double Chance
+        {
+            get;
+            set;
+        }
+
         private BitmapFrame mAsteroidBitmapFrame;
         private BitmapFrame mExplosionBitmapFrame;
+
     }
 }

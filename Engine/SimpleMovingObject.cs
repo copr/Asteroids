@@ -6,9 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace GameTest2
+namespace Engine
 {
-    public abstract class SimpleMovingObject : BasicObject
+    public abstract class SimpleMovingObject : PhysicalObject
     {
         public SimpleMovingObject(double aWidth, double aHeight, BitmapFrame aBitmapFrame, Point aPosition,
             double aDirection, double aSpeed)
@@ -27,6 +27,9 @@ namespace GameTest2
             mVerticalSpeed = aVerticalSpeed;
         }
 
+        /// <summary>
+        /// Moves the object according to its horizontal and vertical speed
+        /// </summary>
         public override void ClockTick()
         {
             Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
@@ -38,8 +41,29 @@ namespace GameTest2
                 return Math.Sqrt(mVerticalSpeed * mVerticalSpeed + mHorizontalSpeed * mHorizontalSpeed);
             }
         }
+        public double Direction
+        {
+            get
+            {
+                return 180 / Math.PI * Math.Atan2(mVerticalSpeed, mHorizontalSpeed);
+            }
+        }
+        public double HorizontalSpeed
+        {
+            get
+            {
+                return mHorizontalSpeed;
+            }
+        }
+        public double VerticalSpeed
+        {
+            get
+            {
+                return mVerticalSpeed;
+            }
+        }
 
-        private double mHorizontalSpeed;
-        private double mVerticalSpeed;
+        protected double mHorizontalSpeed;
+        protected double mVerticalSpeed;
     }
 }

@@ -9,14 +9,17 @@ using System.Windows;
 using System.Windows.Input;
 using System.Threading;
 
+using Engine;
+
 namespace GameTest2
 {
-    public class Life : BasicObject
+    public class Life : PhysicalObject
     {
         public Life(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition, double aAngle) :
             base(aBitmapFrame, aWidth, aHeight, aPosition)
         {
             RotateImage(aAngle);
+            Depth = -50;
         }
 
         public override void ClockTick()

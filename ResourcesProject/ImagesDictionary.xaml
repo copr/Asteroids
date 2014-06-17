@@ -20,5 +20,8 @@
     <BitmapImage x:Key="Rocket2">
         Image/rocket.png
     </BitmapImage>
-    
+    <BitmapImage x:Key="Missile">
+        Image/missile.png
+    </BitmapImage>
+
 </ResourceDictionary>

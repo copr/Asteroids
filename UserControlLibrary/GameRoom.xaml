@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="UserControlLibrary.GameRoom"
+﻿<UserControl x:Class="EngineGui.GameRoom"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,11 +8,4 @@
     <Grid>
         <Canvas Name="mCanvas" Background="#FF005070"/>
     </Grid>
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ResourcesProject;component/ImagesDictionary.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
 </UserControl>

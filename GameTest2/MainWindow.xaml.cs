@@ -11,8 +11,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Threading;
+using System.Timers;
+using System.Diagnostics;
 
+using Engine;
+using EngineGui;
 
 namespace GameTest2
 {
@@ -29,10 +32,9 @@ namespace GameTest2
             mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
             mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
             mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
+            mMissileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Missile"];
 
-            mGameRoom.ControlActionFunction = new UserControlLibrary.GameRoom.ControlActionRequest(InvokeAction);
-
-            mClock = new Timer(ClockTick, null, 0, 10);
+            mGameRoom.ControlActionEvent += InvokeAction;
         }
 
         private void keyDown(object sender, KeyEventArgs e)
@@ -41,33 +43,15 @@ namespace GameTest2
 
             if (e.Key == Key.P)
             {
-                if (mGameRunning)
-                    mGameRunning = false;
+                if (mGameRoom.IsRunning)
+                    mGameRoom.Stop();
                 else
-                    mGameRunning = true;
+                    mGameRoom.Run();
             }
         }
-
         private void keyUp(object sender, KeyEventArgs e)
         {
             mGameRoom.KeyUp(e);
-        }
-
-        private void ClockTick(Object state)
-        {
-            Dispatcher.Invoke(new Action(UpdateObjects), null);
-        }
-
-        private void UpdateObjects()
-        {
-            if (mGameRunning)
-            {
-                mGameRoom.ClockTick();
-            }
-        }  
-        private void GameRoomLoaded(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void mStartGameButton_Click(object sender, RoutedEventArgs e)
@@ -77,14 +61,17 @@ namespace GameTest2
         }
         private void StartNewGame()
         {
-            mGameRoom.AddObject(new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mExplosionBitmapFrame, 96, 64,
+            Rocket lRocket = new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mMissileBitmapFrame, mExplosionBitmapFrame, 96, 64,
                 new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
-                new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl }));
+                new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
 
-            mGameRoom.AsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
-            mGameRoom.AsteroidChance = 0.04;
+            AsteroidGenerator lGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
+            lGenerator.Chance = 0.03;
 
-            mGameRunning = true;
+            mGameRoom.InvokeAction(ERoomAction.AddObject, lRocket);
+            mGameRoom.InvokeAction(ERoomAction.AddObject, lGenerator);
+
+            mGameRoom.Run();
         }
 
         public void InvokeAction(EControlAction aAction, object arg)
@@ -92,8 +79,9 @@ namespace GameTest2
             switch (aAction)
             {
                 case EControlAction.GameOver:
+                    
                     mGameRoom.Reset();
-                    mGameRunning = false;
+                    mGameRoom.Stop();
                     mStartGameButton.Visibility = System.Windows.Visibility.Visible;
                     break;
                 default:
@@ -103,12 +91,10 @@ namespace GameTest2
 
         Random mRandom = new Random();
 
-        private Timer mClock;
         private BitmapFrame mAsteroidBitmapFrame;
         private BitmapFrame mRocketBitmapFrame;
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionBitmapFrame;
-
-        private bool mGameRunning = false;
+        private BitmapFrame mMissileBitmapFrame;
     }
 }

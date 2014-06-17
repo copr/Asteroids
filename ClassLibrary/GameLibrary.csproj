@@ -49,19 +49,19 @@
     <Compile Include="Asteroid.cs" />
     <Compile Include="AsteroidGenerator.cs" />
     <Compile Include="BasicProjectile.cs" />
-    <Compile Include="ControllableMovingObject.cs" />
-    <Compile Include="EOutsideRoomAction.cs" />
-    <Compile Include="EControlAction.cs" />
-    <Compile Include="ERoomAction.cs" />
     <Compile Include="Explosion.cs" />
-    <Compile Include="BasicObject.cs" />
+    <Compile Include="GuidedMissile.cs" />
     <Compile Include="Life.cs" />
+    <Compile Include="MissileLauncher.cs" />
+    <Compile Include="PrimaryGun.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rocket.cs" />
-    <Compile Include="SimpleMovingObject.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <ProjectReference Include="..\Engine\Engine.csproj">
+      <Project>{03d38e11-2997-44cb-ace5-720fa6654489}</Project>
+      <Name>Engine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -6,9 +6,9 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 
-namespace GameTest2
+namespace Engine
 {
-    public abstract class ControllableMovingObject : BasicObject
+    public abstract class ControllableMovingObject : PhysicalObject
     {
         public ControllableMovingObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition, List<Key> aKeys)
             : base(aBitmapFrame, aWidth, aHeight, aPosition)
