@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Engine
+namespace GameTest2
 {
-    public enum ERoomAction
+    public enum EControlAction
     {
-        AddObject, RemoveObject, GameOver, ChangeScore
+        GameOver, ChangeScore
     }
 }
