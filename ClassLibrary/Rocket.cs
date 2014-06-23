@@ -10,10 +10,11 @@ using System.Windows.Input;
 using System.Threading;
 
 using Engine;
+using System.ComponentModel;
 
 namespace GameTest2
 {
-    public class Rocket : ControllableMovingObject
+    public class Rocket : ControllableMovingObject,INotifyPropertyChanged
     {
         /// <summary>
         /// Creates new Rocket object
@@ -34,6 +35,7 @@ namespace GameTest2
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
             NumOfLives = 3;
             Energy = 20;
+            Score = 300;
 
             mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame);
             mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
@@ -93,6 +95,7 @@ namespace GameTest2
             {
                 return (Image.Width / 2) * 0.8;
             }
+
         }
 
         public override void KeyDown(KeyEventArgs e)
@@ -173,6 +176,7 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
+            Score = Score + 1;
             //Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
             RotateImage(mAngle);
@@ -222,6 +226,30 @@ namespace GameTest2
         }
         public int NumOfLives { get; private set; }
         public int Energy { get; private set; }
+
+        private int mScore;
+
+        public int Score
+        {
+            get
+            {
+                return mScore;
+            }
+            set
+            {
+                if (value != this.mScore)
+                {
+                    this.mScore = value;
+                    NotifyPropertyChanged("Score");
+                }
+            }
+        }
+
+        protected void NotifyPropertyChanged(String propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
     
         private BitmapFrame mExplosionFrame;
 
@@ -243,5 +271,7 @@ namespace GameTest2
 
         private PrimaryGun mPrimaryGun;
         private MissileLauncher mMissileLauncher;
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
