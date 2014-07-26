@@ -43,7 +43,7 @@ namespace GameTest2
             lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
                 Position,
                 lAngle - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
-            
+
             foreach (Asteroid a in lChildren)
             {
                 RaiseRoomActionEvent(ERoomAction.AddObject, a);

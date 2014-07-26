@@ -35,6 +35,7 @@ namespace GameTest2
             mMissileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Missile"];
 
             mGameRoom.ControlActionEvent += InvokeAction;
+            
         }
 
         private void keyDown(object sender, KeyEventArgs e)
