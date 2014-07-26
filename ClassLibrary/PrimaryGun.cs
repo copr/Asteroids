@@ -41,7 +41,11 @@ namespace GameTest2
         }
         private void Shoot()
         {
-            RaiseRoomActionEvent(ERoomAction.AddObject, new BasicProjectile(16, 16, mProjectileImage, this.Position, mAimDirection, 12));
+            BasicProjectile lNewProjectile = new BasicProjectile(16, 16, mProjectileImage, this.Position, mAimDirection, 12);
+            lNewProjectile.Owner = this.Owner;
+
+            RaiseRoomActionEvent(ERoomAction.AddObject, lNewProjectile);
+
             mCanShoot = false;
             mTemperature += 10;
             mReadyTimeout = (int)(mTemperature / 4);
@@ -66,6 +70,12 @@ namespace GameTest2
             }
         }
 
+        public Rocket Owner
+        {
+            get;
+            set;
+        }
+
         private bool mCanShoot = true;
         private int mReadyTimeout = 0;
         private double mTemperature = 0;
@@ -73,5 +83,6 @@ namespace GameTest2
         private BitmapFrame mProjectileImage;
 
         private double mAimDirection = 0;
+
     }
 }

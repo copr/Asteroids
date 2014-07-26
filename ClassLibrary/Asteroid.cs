@@ -23,12 +23,12 @@ namespace GameTest2
             mRotationSpeed = lRandom.NextDouble() * 4 - 2;
             mExplosionFrame = aExplosionFrame;
 
-            mCollisionBehavior.Add(typeof(Asteroid), DestroyWithChildren);
-            mCollisionBehavior.Add(typeof(BasicProjectile), DestroyWithChildren);
-            mCollisionBehavior.Add(typeof(GuidedMissile), DestroyWithoutChildren);
-            mCollisionBehavior.Add(typeof(Rocket), DestroyWithoutChildren);
+            mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
+            mCollisionBehavior.Add(typeof(BasicProjectile), CollisionWithProjectile);
+            mCollisionBehavior.Add(typeof(GuidedMissile), CollisionWithProjectile);
+            mCollisionBehavior.Add(typeof(Rocket), DefaultCollisionSolve);
 
-            mInvincibleSteps = 20;
+            InvincibleSteps = 20;
         }
 
         private void CreateChildren()
@@ -56,8 +56,8 @@ namespace GameTest2
             
             mAngle += mRotationSpeed;
             RotateImage(mAngle);
-            if (mInvincibleSteps > 0)
-                mInvincibleSteps--;
+            if (InvincibleSteps > 0)
+                InvincibleSteps--;
         }
         public override double CollisionRadius
         {
@@ -66,19 +66,36 @@ namespace GameTest2
                 return (Image.Width / 2) * 0.8;
             }
         }
-
-        private void DestroyWithoutChildren(PhysicalObject o)
+        private void CollisionWithAsteroid(PhysicalObject o)
         {
-            if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
+            if (IsCollision(o))
             {
-                Destroy();
-                DestroyEffect();
+                if (Image.Width > 16)
+                {
+                    Destroy();
+                    DestroyEffect();
+                    CreateChildren();
+                }
+                else
+                {
+                    Destroy();
+                    DestroyEffect();
+                }
             }
         }
-        private void DestroyWithChildren(PhysicalObject o)
+        private void CollisionWithProjectile(PhysicalObject o)
         {
-            if (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0)
+            if (IsCollision(o))
             {
+                if (o is BasicProjectile)
+                {
+                    (o as BasicProjectile).Owner.Score += (int)Image.Width * 10;
+                }
+                if (o is GuidedMissile)
+                {
+                    (o as GuidedMissile).Owner.Score += (int)Image.Width * 10;
+                }
+
                 if (Image.Width > 16)
                 {
                     Destroy();

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseObject.cs" />
+    <Compile Include="BaseViewModel.cs" />
     <Compile Include="ControllableMovingObject.cs" />
     <Compile Include="EControlAction.cs" />
     <Compile Include="EOutsideRoomAction.cs" />

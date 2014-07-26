@@ -8,13 +8,13 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
 using System.Threading;
+using System.ComponentModel;
 
 using Engine;
-using System.ComponentModel;
 
 namespace GameTest2
 {
-    public class Rocket : ControllableMovingObject,INotifyPropertyChanged
+    public class Rocket : ControllableMovingObject
     {
         /// <summary>
         /// Creates new Rocket object
@@ -35,10 +35,12 @@ namespace GameTest2
             mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
             NumOfLives = 3;
             Energy = 20;
-            Score = 300;
 
             mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame);
             mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
+
+            mPrimaryGun.Owner = this;
+            mMissileLauncher.Owner = this;
         }
         public override void Initialize()
         {
@@ -240,17 +242,11 @@ namespace GameTest2
                 if (value != this.mScore)
                 {
                     this.mScore = value;
-                    NotifyPropertyChanged("Score");
+                    OnPropertyChanged("Score");                    
                 }
             }
         }
-
-        protected void NotifyPropertyChanged(String propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-    
+            
         private BitmapFrame mExplosionFrame;
 
         private Stack<Life> mEnergies = new Stack<Life>();
@@ -271,7 +267,5 @@ namespace GameTest2
 
         private PrimaryGun mPrimaryGun;
         private MissileLauncher mMissileLauncher;
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

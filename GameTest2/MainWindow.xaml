@@ -4,12 +4,16 @@
         xmlns:a ="clr-namespace:EngineGui;assembly=EngineGui"
         xmlns:local="clr-namespace:GameTest2" x:Class="GameTest2.MainWindow"
         Title="MainWindow" Height="600" Width="800" KeyDown="keyDown" KeyUp="keyUp"
-        Background="DodgerBlue" ResizeMode="NoResize" Name="MainWindowName">
+        Background="DodgerBlue" ResizeMode="NoResize" Name="MainWindowName" Closing="MainWindowName_Closing">
     <Grid>
-        <a:GameRoom Name="mGameRoom" HorizontalAlignment="Left" Width="572" Height="572" VerticalAlignment="Top"/>
-        <Button Name="mStartGameButton" Content="Start new game" HorizontalAlignment="Left" Height="68" Margin="216,263,0,0" VerticalAlignment="Top" Width="148" Click="mStartGameButton_Click"/>
-        <Label Name="mScoreLabel" Content="Score:" HorizontalAlignment="Left" Height="27" Margin="595,9,0,0" VerticalAlignment="Top" Width="124"/>
-        <Label Content="{Binding Score}" Name="ActualScoreLabel" HorizontalAlignment="Left" Margin="595,36,0,0" VerticalAlignment="Top" Width="87"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="572"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <local:MainMenu Panel.ZIndex="1" x:Name="mMainMenu" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <a:GameRoom Name="mGameRoom" HorizontalAlignment="Left" Width="572" Height="572"/>
+        <Label Grid.Column="1" Name="mScoreLabel" Content="Score:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="44" Margin="10,0,0,0"/>
+        <Label Grid.Column="1" Content="{Binding Score}" Name="ActualScoreLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="87" Margin="59,10,0,0"/>
     </Grid>
     <Window.Resources>
         <ResourceDictionary>

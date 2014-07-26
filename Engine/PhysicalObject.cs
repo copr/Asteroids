@@ -43,9 +43,9 @@ namespace Engine
                 + (mPosition.Y - aOther.Position.Y) * (mPosition.Y - aOther.Position.Y);
         }
 
-        protected override void DestroyActions()
+        protected override void CustomDestroyActions()
         {
-            base.DestroyActions();
+            base.CustomDestroyActions();
             if (mImage != null)
             {
                 mImage.Visibility = Visibility.Hidden;
@@ -138,7 +138,18 @@ namespace Engine
         #endregion
         #region Members
 
-        protected int mInvincibleSteps = 0;
+        private int mInvincibleSteps = 0;
+        protected int InvincibleSteps
+        {
+            get
+            {
+                return mInvincibleSteps;
+            }
+            set
+            {
+                mInvincibleSteps = value;
+            }
+        }
         protected Dictionary<Type, ActionWithObject<PhysicalObject>> mCollisionBehavior =
             new Dictionary<Type, ActionWithObject<PhysicalObject>>();
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Engine
 {
-    public abstract class BaseObject
+    public abstract class BaseObject : BaseViewModel
     {
         #region Public methods
 
@@ -22,10 +22,15 @@ namespace Engine
                 DestroyActions();
             }
         }
-        protected virtual void DestroyActions()
+        private void DestroyActions()
         {
+            CustomDestroyActions();
             RaiseDestroyedEvent();
             RaiseRoomActionEvent(ERoomAction.RemoveObject, this);
+        }
+        protected virtual void CustomDestroyActions()
+        {
+
         }
 
         #endregion

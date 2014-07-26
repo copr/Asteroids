@@ -86,6 +86,7 @@ namespace GameTest2
                     GuidedMissile lNewMissile = new GuidedMissile(32, 12, mProjectileImage, this.Position, mAimDirection, 12, 8);
 
                     lNewMissile.Target = lTarget;
+                    lNewMissile.Owner = this.Owner;
                     lNewMissile.DestroyedEvent += OnMisileDestroyed;
                     lTarget.DestroyedEvent += OnTargetDestroyed;
                     mTargetedObjects.Add(lTarget);
@@ -94,9 +95,15 @@ namespace GameTest2
                 }
             }
         }
+        public Rocket Owner
+        {
+            get;
+            set;
+        }
 
         private BitmapFrame mProjectileImage;
         private List<PhysicalObject> mTargetedObjects = new List<PhysicalObject>();
         private double mAimDirection;
+
     }
 }

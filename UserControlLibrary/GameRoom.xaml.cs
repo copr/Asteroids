@@ -29,6 +29,7 @@ namespace EngineGui
         {
             InitializeComponent();
             mCanvas.ClipToBounds = true;
+
             mClock.Elapsed += new ElapsedEventHandler(ClockTick);
             mClock.AutoReset = true;
             mClock.Interval = mClockInterval;
@@ -219,7 +220,8 @@ namespace EngineGui
                 {
                     if (o1 != o2)
                     {
-                        o1.SolveCollision(o2);
+                        if (!o1.IsDestroyed)
+                            o1.SolveCollision(o2);
                     }
                 }
             }

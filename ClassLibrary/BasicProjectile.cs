@@ -38,5 +38,10 @@ namespace GameTest2
                 return (Image.Width / 2) * 0.8;
             }
         }
+        public Rocket Owner
+        {
+            get;
+            set;
+        }
     }
 }

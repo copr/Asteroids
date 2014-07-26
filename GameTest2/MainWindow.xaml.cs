@@ -27,7 +27,16 @@ namespace GameTest2
         public MainWindow()
         {
             InitializeComponent();
-            
+
+            MainWindowViewModel lContext = new MainWindowViewModel();
+            lContext.StartGame += RunGame;
+            lContext.StopGame += EndGame;
+
+            this.DataContext = lContext;
+
+            mMainMenuViewModel = new MainMenuViewModel(lContext);
+            mMainMenu.DataContext = mMainMenuViewModel;
+
             mRocketBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Rocket"];
             mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
             mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
@@ -35,60 +44,184 @@ namespace GameTest2
             mMissileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Missile"];
 
             mGameRoom.ControlActionEvent += InvokeAction;
-            
+
+            mLevelManager.Interval = 1000;
+            mLevelManager.AutoReset = true;
+            mLevelManager.Elapsed += LevelManagerElapsed;
+
+            mLevelManager.Start();
+        }
+
+        void LevelManagerElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (mRocket != null && mAsteroidGenerator != null)
+            {
+                lock (mLock)
+                {
+                    if (mRocket.Score < mMaxChanceScore)
+                        mAsteroidGenerator.Chance = mMinChance + (mMaxChance - mMinChance) * mRocket.Score / mMaxChanceScore;
+                    else
+                        mAsteroidGenerator.Chance = mMaxChance;
+                }
+            }
         }
 
         private void keyDown(object sender, KeyEventArgs e)
         {
             mGameRoom.KeyDown(e);
 
-            if (e.Key == Key.P)
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
             {
-                if (mGameRoom.IsRunning)
-                    mGameRoom.Stop();
-                else
-                    mGameRoom.Run();
+                if (lContext.GameRunning)
+                {
+                    if (e.Key == Key.P || e.Key == Key.Escape)
+                    {
+                        if (mGameRoom.IsRunning)
+                        {
+                            PauseGame();
+                        }
+                        else
+                        {
+                            ContinueGame();
+                        }
+                    }
+                }
             }
         }
         private void keyUp(object sender, KeyEventArgs e)
         {
             mGameRoom.KeyUp(e);
         }
-
-        private void mStartGameButton_Click(object sender, RoutedEventArgs e)
+        public void RunGame()
         {
-            StartNewGame();
-            mStartGameButton.Visibility = System.Windows.Visibility.Hidden;
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                if (!lContext.GameRunning)
+                {
+                    StartNewGame();
+                }
+                else if (lContext.GamePaused)
+                {
+                    ContinueGame();
+                }
+            }
         }
         private void StartNewGame()
         {
-            Rocket lRocket = new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mMissileBitmapFrame, mExplosionBitmapFrame, 96, 64,
-                new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
-                new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                lock (mLock)
+                {
+                    mRocket = new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mMissileBitmapFrame, mExplosionBitmapFrame, 96, 64,
+                        new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
+                        new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
 
-            ActualScoreLabel.DataContext = lRocket; 
+                    mAsteroidGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
+                    mAsteroidGenerator.Chance = 0.005;
 
-            AsteroidGenerator lGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
-            lGenerator.Chance = 0.01;
+                    ActualScoreLabel.DataContext = mRocket;
 
-            mGameRoom.InvokeAction(ERoomAction.AddObject, lRocket);
-            mGameRoom.InvokeAction(ERoomAction.AddObject, lGenerator);
+                    mGameRoom.InvokeAction(ERoomAction.AddObject, mRocket);
+                    mGameRoom.InvokeAction(ERoomAction.AddObject, mAsteroidGenerator);
 
-            mGameRoom.Run();
+                    mGameRoom.Run();
+
+                    lContext.GameRunning = true;
+                    mMainMenuViewModel.GameRunning = true;
+
+                    lContext.GamePaused = false;
+                    mMainMenuViewModel.GamePaused = false;
+                }
+            }
+        }
+        private void ContinueGame()
+        {
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                mGameRoom.Run();
+                lContext.GamePaused = false;
+                mMainMenuViewModel.GamePaused = false;
+            }
+        }
+        private void PauseGame()
+        {
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                mGameRoom.Stop();
+                lContext.GamePaused = true;
+                mMainMenuViewModel.GamePaused = true;
+            }
         }
         public void InvokeAction(EControlAction aAction, object arg)
         {
             switch (aAction)
             {
                 case EControlAction.GameOver:
-                    mGameRoom.Reset();
-                    mGameRoom.Stop();
-                    mStartGameButton.Visibility = System.Windows.Visibility.Visible;
+                    StopGame();
                     break;
                 default:
                     break;
             }
         }
+        public void EndGame()
+        {
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                if (lContext.GameRunning)
+                {
+                    StopGame();
+                }
+                else
+                {
+                    this.Close();
+                }
+            }
+        }
+        private void StopGame()
+        {
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                if (lContext.GameRunning)
+                {
+                    int lScore = mRocket.Score;
+                    lock (mLock)
+                    {
+                        mRocket = null;
+                        mAsteroidGenerator = null;
+                    }
+                    mGameRoom.Reset();
+                    mGameRoom.Stop();
+
+                    lContext.GameRunning = false;
+                    mMainMenuViewModel.GameRunning = false;
+
+                    lContext.GamePaused = false;
+                    mMainMenuViewModel.GamePaused = false;
+
+                    lContext.HandleNewScore(lScore);
+
+                    ActualScoreLabel.DataContext = null;
+                }
+            }
+        }
+        private void MainWindowName_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
+            if (lContext != null)
+            {
+                lContext.SaveHighScores();
+            }
+        }
+
+
+        private Timer mLevelManager = new Timer();
 
         Random mRandom = new Random();
         
@@ -97,5 +230,17 @@ namespace GameTest2
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionBitmapFrame;
         private BitmapFrame mMissileBitmapFrame;
+
+        private Rocket mRocket;
+        private AsteroidGenerator mAsteroidGenerator;
+
+        private object mLock = new object();
+
+        private double mMinChance = 0.005;
+        private double mMaxChance = 0.5;
+        private double mMaxChanceScore = 100000;
+
+        private MainMenuViewModel mMainMenuViewModel;
+
     }
 }

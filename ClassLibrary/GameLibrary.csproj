@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Asteroid.cs" />
     <Compile Include="AsteroidGenerator.cs" />
+    <Compile Include="BaseViewModel.cs" />
     <Compile Include="BasicProjectile.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="GuidedMissile.cs" />

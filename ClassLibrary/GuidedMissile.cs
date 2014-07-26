@@ -103,6 +103,12 @@ namespace GameTest2
             Target = null;
         }
 
+        public Rocket Owner
+        {
+            get;
+            set;
+        }
+
         private PhysicalObject mTarget = null;
         private double mMaxTurnDegrees = 0;
     }
