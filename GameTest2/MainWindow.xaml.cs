@@ -66,6 +66,8 @@ namespace GameTest2
                 new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
                 new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
 
+            ActualScoreLabel.DataContext = lRocket; 
+
             AsteroidGenerator lGenerator = new AsteroidGenerator(mAsteroidBitmapFrame, mExplosionBitmapFrame);
             lGenerator.Chance = 0.01;
 
@@ -74,13 +76,11 @@ namespace GameTest2
 
             mGameRoom.Run();
         }
-
         public void InvokeAction(EControlAction aAction, object arg)
         {
             switch (aAction)
             {
                 case EControlAction.GameOver:
-                    
                     mGameRoom.Reset();
                     mGameRoom.Stop();
                     mStartGameButton.Visibility = System.Windows.Visibility.Visible;
@@ -91,7 +91,7 @@ namespace GameTest2
         }
 
         Random mRandom = new Random();
-
+        
         private BitmapFrame mAsteroidBitmapFrame;
         private BitmapFrame mRocketBitmapFrame;
         private BitmapFrame mProjectileBitmapFrame;
