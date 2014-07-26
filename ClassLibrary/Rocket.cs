@@ -36,6 +36,8 @@ namespace GameTest2
             NumOfLives = 3;
             Energy = 20;
 
+            InvincibleSteps = 60;
+
             mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame);
             mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
 
@@ -53,7 +55,7 @@ namespace GameTest2
 
         private void CollisionSolve(PhysicalObject o)
         {
-            if (Distance(o) < CollisionRadius + o.CollisionRadius)
+            if (IsCollision(o))
             {
                 int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
                 
@@ -178,6 +180,9 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
+            if (InvincibleSteps > 0)
+                InvincibleSteps--;
+
             Score = Score + 1;
             //Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;

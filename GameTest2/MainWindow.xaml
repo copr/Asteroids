@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:a ="clr-namespace:EngineGui;assembly=EngineGui"
         xmlns:local="clr-namespace:GameTest2" x:Class="GameTest2.MainWindow"
-        Title="MainWindow" Height="600" Width="800" KeyDown="keyDown" KeyUp="keyUp"
+        Title="Asteroids" Height="600" Width="800" KeyDown="keyDown" KeyUp="keyUp"
         Background="DodgerBlue" ResizeMode="NoResize" Name="MainWindowName" Closing="MainWindowName_Closing">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -12,8 +12,9 @@
         </Grid.ColumnDefinitions>
         <local:MainMenu Panel.ZIndex="1" x:Name="mMainMenu" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <a:GameRoom Name="mGameRoom" HorizontalAlignment="Left" Width="572" Height="572"/>
-        <Label Grid.Column="1" Name="mScoreLabel" Content="Score:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="44" Margin="10,0,0,0"/>
-        <Label Grid.Column="1" Content="{Binding Score}" Name="ActualScoreLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="87" Margin="59,10,0,0"/>
+        <Label Foreground="Red" FontSize="22" Grid.Column="1" Name="mScoreLabel" Content="Score:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Margin="10,10,0,0"/>
+        <Label HorizontalContentAlignment="Right" Foreground="Red" FontSize="22" Grid.Column="1" Content="{Binding Score}" Name="ActualScoreLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="125" Margin="87,10,0,0" Height="39"/>
+        <Label Visibility="{Binding PausedTextVisibility}" Foreground="Red" FontSize="22" Content="Game paused" HorizontalAlignment="Left" Margin="206,91,0,0" VerticalAlignment="Top" Width="160" Height="46"/>
     </Grid>
     <Window.Resources>
         <ResourceDictionary>

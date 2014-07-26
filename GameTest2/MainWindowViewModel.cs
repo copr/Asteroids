@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Windows;
 
 namespace GameTest2
 {
@@ -77,6 +78,18 @@ namespace GameTest2
                 if (mGamePaused != value) mGamePaused = value;
                 OnPropertyChanged("GamePaused");
                 OnPropertyChanged("StartButtonText");
+                OnPropertyChanged("PausedTextVisibility");
+            }
+        }
+
+        public Visibility PausedTextVisibility
+        {
+            get
+            {
+                if (!GamePaused)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
             }
         }
 
