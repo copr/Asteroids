@@ -8,6 +8,9 @@
     <BitmapImage x:Key="Asteroid">
         Image/asteroid.png
     </BitmapImage>
+    <BitmapImage x:Key="Asteroid2">
+        Image/asteroid2.png
+    </BitmapImage>
     <BitmapImage x:Key="Rocket">
         Image/rocket2.png
     </BitmapImage>

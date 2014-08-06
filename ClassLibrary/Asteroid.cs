@@ -6,18 +6,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.IO;
 
 using Engine;
-using System.IO;
 
 namespace GameTest2
 {
     public class Asteroid : SimpleMovingObject
     {
-        public Asteroid(BitmapFrame aBitmapFrame, BitmapFrame aExplosionFrame, double aSize, Point aPosition,
-            double aDirection, double aSpeed)
-            : base(aSize, aSize, aBitmapFrame, aPosition, aDirection, aSpeed)
+        public Asteroid(BitmapFrame aBitmapFrame, BitmapFrame aExplosionFrame,
+            Point aPosition,
+            double aDirection, double aSpeed, 
+            AsteroidSettings aSettings)
+            : base(aSettings.Size, aSettings.Size, aBitmapFrame, aPosition, aDirection, aSpeed)
         {
+            mHealth = 1;
             Random lRandom = new Random();
             mAngle = lRandom.NextDouble() * 360;
             mRotationSpeed = lRandom.NextDouble() * 4 - 2;
@@ -29,6 +32,8 @@ namespace GameTest2
             mCollisionBehavior.Add(typeof(Rocket), DefaultCollisionSolve);
 
             InvincibleSteps = 20;
+
+            mSettings = aSettings;
         }
 
         private void CreateChildren()
@@ -37,12 +42,21 @@ namespace GameTest2
 
             List<Asteroid> lChildren = new List<Asteroid>();
 
-            lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+            AsteroidSettings aChild1Settings = mSettings.Clone();
+            aChild1Settings.Size = this.mSettings.Size / 2;
+            AsteroidSettings aChild2Settings = mSettings.Clone();
+            aChild2Settings.Size = this.mSettings.Size / 2;
+
+            lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame,
                 Position,
-                lAngle - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
-            lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame, Image.Width / 2,
+                lAngle - 90 + mRandom.NextDouble() * 180,
+                1.4 * Speed,
+                aChild1Settings));
+            lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame,
                 Position,
-                lAngle - 90 + mRandom.NextDouble() * 180, 1.4 * Speed));
+                lAngle - 90 + mRandom.NextDouble() * 180,
+                1.4 * Speed,
+                aChild2Settings));
 
             foreach (Asteroid a in lChildren)
             {
@@ -68,18 +82,28 @@ namespace GameTest2
         }
         private void CollisionWithAsteroid(PhysicalObject o)
         {
-            if (IsCollision(o))
+            if (o is Asteroid)
             {
-                if (Image.Width > 16)
+                if (Strength > (o as Asteroid).Strength)
                 {
-                    Destroy();
-                    DestroyEffect();
-                    CreateChildren();
+                    mHealth -= (o as Asteroid).mSettings.Size / ((o as Asteroid).mSettings.Size + mSettings.Size);
                 }
                 else
                 {
-                    Destroy();
-                    DestroyEffect();
+                    if (IsCollision(o))
+                    {
+                        if (mSettings.Size > mSettings.MinSizeForChildren)
+                        {
+                            Destroy();
+                            DestroyEffect();
+                            CreateChildren();
+                        }
+                        else
+                        {
+                            Destroy();
+                            DestroyEffect();
+                        }
+                    }
                 }
             }
         }
@@ -89,23 +113,28 @@ namespace GameTest2
             {
                 if (o is BasicProjectile)
                 {
-                    (o as BasicProjectile).Owner.Score += (int)Image.Width * 10;
+                    (o as BasicProjectile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
+                    mHealth -= mSettings.ProjectileDamage;
                 }
                 if (o is GuidedMissile)
                 {
-                    (o as GuidedMissile).Owner.Score += (int)Image.Width * 10;
+                    (o as GuidedMissile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
+                    mHealth -= mSettings.MissileDamage;
                 }
 
-                if (Image.Width > 16)
+                if (mHealth <= 0)
                 {
-                    Destroy();
-                    DestroyEffect();
-                    CreateChildren();
-                }
-                else
-                {
-                    Destroy();
-                    DestroyEffect();
+                    if (mSettings.Size > mSettings.MinSizeForChildren)
+                    {
+                        Destroy();
+                        DestroyEffect();
+                        CreateChildren();
+                    }
+                    else
+                    {
+                        Destroy();
+                        DestroyEffect();
+                    }
                 }
             }
         }
@@ -114,8 +143,19 @@ namespace GameTest2
             RaiseRoomActionEvent(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Height, Position));
         }
 
+        public int Strength
+        {
+            get
+            {
+                return mSettings.Strength;
+            }
+        }
+
         private double mAngle;
         private double mRotationSpeed;
         private BitmapFrame mExplosionFrame;
+
+        private AsteroidSettings mSettings;
+        private double mHealth;
     }
 }

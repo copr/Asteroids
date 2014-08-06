@@ -32,9 +32,9 @@ namespace GameTest2
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
             mExplosionFrame = aExplosionFrame;
-            mCollisionBehavior.Add(typeof(Asteroid), CollisionSolve);
-            NumOfLives = 3;
-            Energy = 20;
+            mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
+
+            Health = mMaxHealth;
 
             InvincibleSteps = 60;
 
@@ -46,42 +46,27 @@ namespace GameTest2
         }
         public override void Initialize()
         {
-            InitializeHealth();
-            InitializeEnergy();
-
             RaiseRoomActionEvent(ERoomAction.AddObject, mPrimaryGun);
             RaiseRoomActionEvent(ERoomAction.AddObject, mMissileLauncher);
         }
 
-        private void CollisionSolve(PhysicalObject o)
+        private void CollisionWithAsteroid(PhysicalObject o)
         {
             if (IsCollision(o))
             {
-                int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
-                
-                Energy -= lEnergyLoss;
-                DropEnergy((int)lEnergyLoss);
-
-                if (Energy <= 0)
+                if (o is Asteroid)
                 {
-                    Energy = 20;
-                    NumOfLives--;
-                    if (NumOfLives < 0)
+                    Asteroid lAsteroid = o as Asteroid;
+                    int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
+
+                    Health -= lEnergyLoss * lAsteroid.Strength;
+
+                    if (Health <= 0.0)
                     {
                         Destroy();
                         DestroyEffect();
                         GameOver();
                     }
-                    else
-                    {
-                        RaiseRoomActionEvent(ERoomAction.RemoveObject, mLives.Pop());
-                        mAngle = -90;
-                        InitializeEnergy();
-                        DestroyEffect();
-                    }
-                    Position = new Point(GameRoom.RoomWidth / 2, GameRoom.RoomHeight / 2);
-                    mVerticalSpeed = 0;
-                    mHorizontalSpeed = 0;
                 }
             }
         }
@@ -148,36 +133,6 @@ namespace GameTest2
                 mWantShootMissile = false;
             }
         }
-        private void InitializeHealth()
-        {
-            for (int i = mLives.Count; i < NumOfLives; i++)
-            {
-                mLives.Push(new Life((BitmapFrame)Image.Source, 40, 30,
-                    new Point(GameRoom.RoomWidth - mLives.Count * 50 - 20, GameRoom.RoomHeight - 50), 270));
-                RaiseRoomActionEvent(ERoomAction.AddObject, mLives.Peek());
-            }
-        }
-
-        private void InitializeEnergy()
-        {
-            for (int i = mEnergies.Count; i < Energy; i++)
-            {
-                mEnergies.Push(new Life((BitmapFrame)Image.Source, 20, 15,
-                    new Point(GameRoom.RoomWidth - mEnergies.Count * 15 - 15, GameRoom.RoomHeight - 20), 270));
-                RaiseRoomActionEvent(ERoomAction.AddObject, mEnergies.Peek());
-            }
-        }
-
-        private void DropEnergy(int aDropped)
-        {
-            for (int i = 0; i < aDropped; i++)
-            {
-                if (mEnergies.Count != 0)
-                {
-                    RaiseRoomActionEvent(ERoomAction.RemoveObject, mEnergies.Pop());
-                }
-            }
-        }
         public override void ClockTick()
         {
             if (InvincibleSteps > 0)
@@ -231,8 +186,6 @@ namespace GameTest2
                 return EOutsideRoomAction.Return;
             }
         }
-        public int NumOfLives { get; private set; }
-        public int Energy { get; private set; }
 
         private int mScore;
 
@@ -249,6 +202,38 @@ namespace GameTest2
                     this.mScore = value;
                     OnPropertyChanged("Score");                    
                 }
+            }
+        }
+
+        private double mHealth;
+        public double Health
+        {
+            get { return mHealth; }
+            private set
+            {
+                if (value == mHealth) return;
+                mHealth = value;
+                OnPropertyChanged("Health");
+                OnPropertyChanged("HealthPercentage");
+            }
+        }
+        private double mMaxHealth = 100;
+        public double MaxHealth
+        {
+            get { return mMaxHealth; }
+            private set
+            {
+                if (value == mMaxHealth) return;
+                mMaxHealth = value;
+                OnPropertyChanged("MaxHealth");
+                OnPropertyChanged("HealthPercentage");
+            }
+        }
+        public double HealthPercentage
+        {
+            get
+            {
+                return mHealth / mMaxHealth * 100d;
             }
         }
             

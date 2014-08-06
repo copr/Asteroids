@@ -7,6 +7,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Score" Binding="{Binding Score}"/>
+                <DataGridTextColumn Header="Time" Binding="{Binding Time}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

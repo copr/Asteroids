@@ -40,10 +40,11 @@ namespace GameTest2
         {
             if (mHighScores.IsHighScore(aScore))
             {
+                DateTime lTime = DateTime.Now;
                 InputNamePopUp lWindow = new InputNamePopUp();
                 lWindow.ShowDialog();
 
-                mHighScores.AddHighScore(lWindow.NameTextBox.Text, aScore);
+                mHighScores.AddHighScore(lWindow.NameTextBox.Text, aScore, lTime);
             }
         }
 
@@ -79,6 +80,7 @@ namespace GameTest2
                 OnPropertyChanged("GamePaused");
                 OnPropertyChanged("StartButtonText");
                 OnPropertyChanged("PausedTextVisibility");
+                OnPropertyChanged("GameInfoVisibility");
             }
         }
 
@@ -87,6 +89,17 @@ namespace GameTest2
             get
             {
                 if (!GamePaused)
+                    return Visibility.Hidden;
+                else
+                    return Visibility.Visible;
+            }
+        }
+
+        public Visibility GameInfoVisibility
+        {
+            get
+            {
+                if (!GameRunning)
                     return Visibility.Hidden;
                 else
                     return Visibility.Visible;

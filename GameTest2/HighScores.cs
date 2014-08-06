@@ -52,9 +52,9 @@ namespace GameTest2
             set;
         }
 
-        public void AddHighScore(string aName, int aScore)
+        public void AddHighScore(string aName, int aScore, DateTime aTime)
         {
-            HighScoresList.Add(new ScoreRecord(aName, aScore));
+            HighScoresList.Add(new ScoreRecord(aName, aScore, aTime));
             Sort();
 
             while (HighScoresList.Count > 10)

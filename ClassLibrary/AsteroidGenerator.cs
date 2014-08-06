@@ -14,34 +14,28 @@ namespace GameTest2
     public class AsteroidGenerator : BaseObject
     {
         public AsteroidGenerator()
-            : this(0)
         {
 
-        }
-        public AsteroidGenerator(double aChance)
-        {
-            Chance = aChance;
         }
         public override void ClockTick()
         {
-            double lRandom = mRandom.NextDouble();
-
-            if (lRandom < Chance)
+            foreach (var lType in mAsteroidsTypes)
             {
-                RaiseRoomActionEvent(ERoomAction.AddObject, CreateAsteroid());
+                double lRandom = mRandom.NextDouble();
+
+                if (lRandom < lType.Value)
+                {
+                    RaiseRoomActionEvent(ERoomAction.AddObject, CreateAsteroid(lType.Key));
+                }
             }
         }
-        public AsteroidGenerator(BitmapFrame aAsteroidBitmapFrame, BitmapFrame aExplosionBitmapFrame)
+        private Asteroid CreateAsteroid(AsteroidType aType)
         {
-            mAsteroidBitmapFrame = aAsteroidBitmapFrame;
-            mExplosionBitmapFrame = aExplosionBitmapFrame;
-            AsteroidSize = 64;
-        }
-        private Asteroid CreateAsteroid()
-        {
-            int lAsteroidX = 0;
-            int lAsteroidY = 0;
-            int lDirection = 0;
+            double lAsteroidX = 0;
+            double lAsteroidY = 0;
+            double lDirection = 0;
+
+            double lAsteroidSize = aType.MinSize + mRandom.NextDouble() * (aType.MaxSize - aType.MinSize);
 
             //left /right
             if (mRandom.Next(2) == 0)
@@ -50,49 +44,72 @@ namespace GameTest2
                 //left
                 if (mRandom.Next(2) == 0)
                 {
-                    lAsteroidX = -AsteroidSize / 2;
+                    lAsteroidX = -lAsteroidSize / 2;
                     lDirection = -90 + mRandom.Next(181);
                 }
                 else//right
                 {
-                    lAsteroidX = (int)GameRoom.RoomWidth + AsteroidSize / 2;
+                    lAsteroidX = (int)GameRoom.RoomWidth + lAsteroidSize / 2;
                     lDirection = 90 + mRandom.Next(181);
                 }
             }
-            else//top/bottom
+            else //top/bottom
             {
                 lAsteroidX = mRandom.Next((int)GameRoom.RoomWidth);
                 //top
                 if (mRandom.Next(2) == 0)
                 {
-                    lAsteroidY = -AsteroidSize / 2;
+                    lAsteroidY = -lAsteroidSize / 2;
                     lDirection = mRandom.Next(181);
                 }
-                else//bottom
+                else //bottom
                 {
-                    lAsteroidY = (int)GameRoom.RoomHeight + AsteroidSize / 2;
+                    lAsteroidY = (int)GameRoom.RoomHeight + lAsteroidSize / 2;
                     lDirection = 180 + mRandom.Next(181);
                 }
             }
 
-            return new Asteroid(mAsteroidBitmapFrame, mExplosionBitmapFrame, AsteroidSize,
+            AsteroidSettings lSettings = new AsteroidSettings()
+            {
+                MinSizeForChildren = aType.MinSizeForChildren,
+                MissileDamage = aType.MissileDamage,
+                ProjectileDamage = aType.ProjectileDamage,
+                Size = lAsteroidSize,
+                Strength = aType.Strength,
+                TypeName = aType.TypeName,
+                PointsMultiplier = aType.PointsMultiplier
+            };
+
+            return new Asteroid(aType.BitmapFrame, aType.ExplosionFrame,
                 new Point(lAsteroidX, lAsteroidY),
-                lDirection, mRandom.NextDouble() * 3 + 1);
+                lDirection, mRandom.NextDouble() * 3 + 1,
+                lSettings);
         }
-        public int AsteroidSize
+
+        public void SetChance(AsteroidType aType, double aNewChance)
         {
-            get;
-            set;
-        }
+            if (mAsteroidsTypes.ContainsKey(aType))
+            {
+                mAsteroidsTypes[aType] = aNewChance;
+            }
 
-        public double Chance
+        }
+        public void AddAsteroidType(AsteroidType aNewType, double aChance = 0)
         {
-            get;
-            set;
+            mAsteroidsTypes.Add(aNewType, aChance);
+        }
+        public void DeleteAsteroidType(AsteroidType aType)
+        {
+            if (mAsteroidsTypes.ContainsKey(aType))
+            {
+                mAsteroidsTypes.Remove(aType);
+            }
+        }
+        public void ClearAsteroidTypes()
+        {
+            mAsteroidsTypes.Clear();
         }
 
-        private BitmapFrame mAsteroidBitmapFrame;
-        private BitmapFrame mExplosionBitmapFrame;
-
+        private Dictionary<AsteroidType, double> mAsteroidsTypes = new Dictionary<AsteroidType, double>();
     }
 }

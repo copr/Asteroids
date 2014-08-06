@@ -89,6 +89,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="HealthBar.xaml.cs">
+      <DependentUpon>HealthBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HighScoresViewModel.cs" />
     <Compile Include="HighScoresWindow.xaml.cs">
       <DependentUpon>HighScoresWindow.xaml</DependentUpon>
@@ -97,6 +100,10 @@
       <DependentUpon>InputNamePopUp.xaml</DependentUpon>
     </Compile>
     <Compile Include="ScoreRecord.cs" />
+    <Page Include="HealthBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="HighScoresWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
