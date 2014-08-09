@@ -24,6 +24,8 @@ namespace GameTest2
             NameTextBox.Focus();
         }
 
+        
+
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             Close();

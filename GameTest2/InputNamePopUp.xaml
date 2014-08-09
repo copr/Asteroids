@@ -1,11 +1,17 @@
 ﻿<Window x:Class="GameTest2.InputNamePopUp"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="InputNamePopUp" Height="215" Width="300"
+        xmlns:local="clr-namespace:GameTest2"
+        Title="New high score" Height="232.25" Width="356"
         ResizeMode="NoResize" Closed="Window_Closed" KeyDown="Window_KeyDown">
+    <Window.DataContext>
+        <local:InputNamePopUpViewModel/>
+    </Window.DataContext>
     <Grid>
-        <Button Name="OkButton" Content="OK" HorizontalAlignment="Left" Margin="209,143,0,0" VerticalAlignment="Top" Width="75" Height="34" Click="OkButton_Click"/>
-        <TextBox FontSize="18" Name="NameTextBox" HorizontalAlignment="Left" Height="65" Margin="10,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="274"/>
-        <Label FontSize="18" Content="New high score!&#10;Enter your name:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Button Name="OkButton" Content="OK" HorizontalAlignment="Left" Margin="265,161,0,0" VerticalAlignment="Top" Width="75" Height="34" Click="OkButton_Click"/>
+        <TextBox FontSize="18" Name="NameTextBox" HorizontalAlignment="Left" Height="65" Margin="10,91,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="330"/>
+        <Label FontSize="18" Content="New high score! Enter your name:" HorizontalAlignment="Left" Margin="10,49,0,0" VerticalAlignment="Top" Height="37" Width="330"/>
+        <Label FontSize="18" Content="{Binding NewScore}" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" HorizontalAlignment="Left" Margin="113,10,0,0" VerticalAlignment="Top" Height="34" Width="124"/>
+        <Label FontSize="18" Content="Your score:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

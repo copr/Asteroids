@@ -40,8 +40,17 @@ namespace GameTest2
         {
             if (mHighScores.IsHighScore(aScore))
             {
+                int lPosition = mHighScores.HighScorePosition(aScore);
                 DateTime lTime = DateTime.Now;
                 InputNamePopUp lWindow = new InputNamePopUp();
+
+                var lContext = lWindow.DataContext as InputNamePopUpViewModel;
+                if (lContext != null)
+                {
+                    lContext.NewScore = aScore;
+                    lContext.Position = lPosition;
+                }
+
                 lWindow.ShowDialog();
 
                 mHighScores.AddHighScore(lWindow.NameTextBox.Text, aScore, lTime);
@@ -103,6 +112,17 @@ namespace GameTest2
                     return Visibility.Hidden;
                 else
                     return Visibility.Visible;
+            }
+        }
+        private Rocket mRocket;
+        public Rocket Rocket
+        {
+            get { return mRocket; }
+            set
+            {
+                if (mRocket == value) return;
+                mRocket = value;
+                OnPropertyChanged("Rocket");
             }
         }
 

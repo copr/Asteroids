@@ -71,6 +71,22 @@ namespace GameTest2
             else
                 return true;
         }
+        public int HighScorePosition(int aScore)
+        {
+            if (IsHighScore(aScore))
+            {
+                int lIndex = 0;
+                while (HighScoresList[lIndex].Score >= aScore && lIndex < HighScoresList.Count)
+                {
+                    lIndex++;
+                }
+                return lIndex;
+            }
+            else
+            {
+                return -1;
+            }
+        }
         private void Sort()
         {
             HighScoresList = new ObservableCollection<ScoreRecord>(HighScoresList.OrderByDescending(x => x.Score));

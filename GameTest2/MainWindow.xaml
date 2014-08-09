@@ -12,10 +12,10 @@
         </Grid.ColumnDefinitions>
         <local:MainMenu Panel.ZIndex="1" x:Name="mMainMenu" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <a:GameRoom Background="#FF005070" Name="mGameRoom" HorizontalAlignment="Left" Width="572" Height="572"/>
-        <Label Visibility="{Binding GameInfoVisibility}" Foreground="Red" FontSize="22" Grid.Column="1" Name="mScoreLabel" Content="Score:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Margin="10,10,0,0"/>
-        <Label Visibility="{Binding GameInfoVisibility}" Background="#FF0077FF" HorizontalContentAlignment="Right" Foreground="Red" FontSize="22" Grid.Column="1" Content="{Binding Score}" Name="ActualScoreLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Margin="10,54,0,0" Height="39"/>
+        <Label Visibility="{Binding GameInfoVisibility}" Foreground="Red" FontSize="22" Grid.Column="1" x:Name="mScoreLabel" Content="Score:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="72" Margin="10,10,0,0"/>
+        <Label Visibility="{Binding GameInfoVisibility}" Background="#FF0077FF" HorizontalContentAlignment="Right" Foreground="Red" FontSize="22" Grid.Column="1" Content="{Binding Rocket.Score}" x:Name="ActualScoreLabel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="99" Margin="10,54,0,0" Height="39"/>
         <Label Visibility="{Binding GameInfoVisibility}" Foreground="Red" FontSize="22" Grid.Column="1" x:Name="mHealthLabel" Content="Health:" HorizontalAlignment="Left" VerticalAlignment="Top" Width="84" Margin="10,98,0,0"/>
-        <local:HealthBar Visibility="{Binding GameInfoVisibility}" x:Name="HealthBar" Grid.Column="1" Percentage="{Binding HealthPercentage}" Margin="10,142,10,391"/>
+        <local:HealthBar Visibility="{Binding GameInfoVisibility}" x:Name="HealthBar" Grid.Column="1" Percentage="{Binding Rocket.HealthPercentage}" Margin="10,142,10,391"/>
         <Label Visibility="{Binding PausedTextVisibility}" Foreground="Red" FontSize="22" Content="Game paused" HorizontalAlignment="Left" Margin="206,91,0,0" VerticalAlignment="Top" Width="160" Height="46"/>
     </Grid>
     <Window.Resources>

@@ -99,6 +99,7 @@
     <Compile Include="InputNamePopUp.xaml.cs">
       <DependentUpon>InputNamePopUp.xaml</DependentUpon>
     </Compile>
+    <Compile Include="InputNamePopUpViewModel.cs" />
     <Compile Include="ScoreRecord.cs" />
     <Page Include="HealthBar.xaml">
       <SubType>Designer</SubType>

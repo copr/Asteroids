@@ -189,9 +189,10 @@ namespace GameTest2
                     {
                         mAsteroidGenerator.AddAsteroidType(lType.Key);
                     }
+                    lContext.Rocket = mRocket;
 
-                    ActualScoreLabel.DataContext = mRocket;
-                    HealthBar.DataContext = mRocket;
+                    //ActualScoreLabel.DataContext = mRocket;
+                    //HealthBar.DataContext = mRocket;
 
                     mGameRoom.InvokeAction(ERoomAction.AddObject, mRocket);
                     mGameRoom.InvokeAction(ERoomAction.AddObject, mAsteroidGenerator);
@@ -275,8 +276,6 @@ namespace GameTest2
                     mMainMenuViewModel.GamePaused = false;
 
                     lContext.HandleNewScore(lScore);
-
-                    ActualScoreLabel.DataContext = null;
                 }
             }
         }
