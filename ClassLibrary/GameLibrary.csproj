@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GameTest2</RootNamespace>
-    <AssemblyName>ClassLibrary</AssemblyName>
+    <AssemblyName>GameLibrary</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -55,7 +55,6 @@
     <Compile Include="ChancesLineConfiguration.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="GuidedMissile.cs" />
-    <Compile Include="Life.cs" />
     <Compile Include="MissileLauncher.cs" />
     <Compile Include="PrimaryGun.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

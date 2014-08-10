@@ -85,13 +85,18 @@ namespace GameTest2
         {
             if (o is Asteroid)
             {
-                if (Strength > (o as Asteroid).Strength)
+                if (IsCollision(o))
                 {
-                    mHealth -= (o as Asteroid).mSettings.Size / ((o as Asteroid).mSettings.Size + mSettings.Size);
-                }
-                else
-                {
-                    if (IsCollision(o))
+                    if (Strength > (o as Asteroid).Strength)
+                    {
+                        mHealth -= (o as Asteroid).Size / ((o as Asteroid).Size + Size);
+                    }
+                    else
+                    {
+                        mHealth = 0;
+                    }
+
+                    if (mHealth <= 0)
                     {
                         if (mSettings.Size > mSettings.MinSizeForChildren)
                         {

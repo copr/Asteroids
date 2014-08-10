@@ -197,11 +197,9 @@ namespace GameTest2
             }
             set
             {
-                if (value != this.mScore)
-                {
-                    this.mScore = value;
-                    OnPropertyChanged("Score");                    
-                }
+                if (mScore == value) return;
+                mScore = value;
+                OnPropertyChanged("Score");
             }
         }
 
@@ -239,11 +237,8 @@ namespace GameTest2
             
         private BitmapFrame mExplosionFrame;
 
-        private Stack<Life> mEnergies = new Stack<Life>();
-        private Stack<Life> mLives = new Stack<Life>();
-
         private double mAngle = -90;
-        private double cAngleChangeSpeed = 4;
+        private double cAngleChangeSpeed = 5;
         private double mAngleChangeSign = 0;
 
         private double mHorizontalSpeed = 0;
