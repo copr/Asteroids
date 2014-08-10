@@ -67,19 +67,8 @@ namespace GameTest2
             {
                 if (lPossibleTargets.Count > 0)
                 {
-                    double lMinSquareDistance = double.MaxValue;
-                    PhysicalObject lTarget = null;
-                    foreach (PhysicalObject t in lPossibleTargets)
-                    {
-                        double lDistance = SquaredDistance(t);
-
-                        if (lDistance < lMinSquareDistance
-                            )
-                        {
-                            lMinSquareDistance = lDistance;
-                            lTarget = t;
-                        }
-                    }
+                    //PhysicalObject lTarget = lPossibleTargets.OrderBy(x => this.SquaredDistance(x)).First();
+                    PhysicalObject lTarget = lPossibleTargets.OrderByDescending(x => x.Size).First();
 
                     double lDirectionToTarget = 180 / Math.PI * Math.Atan2(lTarget.Position.Y - Position.Y, lTarget.Position.X - Position.X);
 

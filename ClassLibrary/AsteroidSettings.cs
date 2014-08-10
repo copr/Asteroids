@@ -14,6 +14,7 @@ namespace GameTest2
         public string TypeName { get; set; }
         public int Strength { get; set; }
         public double PointsMultiplier { get; set; }
+        public double RotationSpeed { get; set; }
 
         public AsteroidSettings Clone()
         {
@@ -25,7 +26,8 @@ namespace GameTest2
                 Size = this.Size,
                 TypeName = this.TypeName,
                 Strength = this.Strength,
-                PointsMultiplier = this.PointsMultiplier
+                PointsMultiplier = this.PointsMultiplier,
+                RotationSpeed = this.RotationSpeed
             };
         }
     }

@@ -18,5 +18,8 @@ namespace GameTest2
         public double MinSizeForChildren { get; set; }
         public int Strength { get; set; }
         public double PointsMultiplier { get; set; }
+        public double MinSpeed { get; set; }
+        public double MaxSpeed { get; set; }
+        public double MaxRotationSpeed { get; set; }
     }
 }

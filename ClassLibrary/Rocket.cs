@@ -38,7 +38,7 @@ namespace GameTest2
 
             InvincibleSteps = 60;
 
-            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame);
+            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame) { OverheatCoefficient = 6 };
             mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
 
             mPrimaryGun.Owner = this;

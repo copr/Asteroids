@@ -47,7 +47,7 @@ namespace GameTest2
             RaiseRoomActionEvent(ERoomAction.AddObject, lNewProjectile);
 
             mCanShoot = false;
-            mTemperature += 10;
+            mTemperature += OverheatCoefficient;
             mReadyTimeout = (int)(mTemperature / 4);
         }
         public double AimDirection
@@ -79,6 +79,8 @@ namespace GameTest2
         private bool mCanShoot = true;
         private int mReadyTimeout = 0;
         private double mTemperature = 0;
+
+        public double OverheatCoefficient { get; set; }
 
         private BitmapFrame mProjectileImage;
 

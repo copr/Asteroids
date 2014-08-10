@@ -40,8 +40,10 @@ namespace GameTest2
             mRocketBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Rocket"];
             mAsteroidBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid"];
             mAsteroid2BitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid2"];
+            mAsteroid3BitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Asteroid3"];
             mProjectileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Projectile"];
             mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
+            mExplosion2BitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion2"];
             mMissileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Missile"];
 
             mGameRoom.ControlActionEvent += InvokeAction;
@@ -64,17 +66,20 @@ namespace GameTest2
                 MaxSize = 64,
                 MinSize = 48,
                 MinSizeForChildren = 16,
+                MinSpeed = 2,
+                MaxSpeed = 5,
                 MissileDamage = 1,
                 PointsMultiplier = 1,
                 ProjectileDamage = 0.5,
                 Strength = 1,
-                TypeName = "Basic"
+                TypeName = "Basic",
+                MaxRotationSpeed = 4
             };
             ChancesLineConfiguration lChances1 = new ChancesLineConfiguration()
             {
-                MaxChance = 0.20,
-                MaxChanceScore = 12000,
-                MinChance = 0.008,
+                MaxChance = 0.18,
+                MaxChanceScore = 18000,
+                MinChance = 0.01,
                 MinChanceScore = 0
             };
             AsteroidType lType2 = new AsteroidType()
@@ -84,27 +89,54 @@ namespace GameTest2
                 MaxSize = 128,
                 MinSize = 80,
                 MinSizeForChildren = 32,
-                MissileDamage = 5,
+                MinSpeed = 1,
+                MaxSpeed = 2,
+                MissileDamage = .5,
                 PointsMultiplier = 2.5,
                 ProjectileDamage = 0.2,
                 Strength = 2,
-                TypeName = "Advanced"
+                TypeName = "Advanced",
+                MaxRotationSpeed = 1
             };
             ChancesLineConfiguration lChances2 = new ChancesLineConfiguration()
             {
-                MaxChance = 0.028,
-                MaxChanceScore = 100000,
+                MaxChance = 0.02,
+                MaxChanceScore = 50000,
                 MinChance = 0.000,
                 MinChanceScore = 4000
+            };
+            AsteroidType lType3 = new AsteroidType()
+            {
+                BitmapFrame = mAsteroid3BitmapFrame,
+                ExplosionFrame = mExplosionBitmapFrame,
+                MaxSize = 48,
+                MinSize = 24,
+                MinSizeForChildren = 96,
+                MinSpeed = 4,
+                MaxSpeed = 6,
+                MissileDamage = 1,
+                PointsMultiplier = 3.5,
+                ProjectileDamage = 0.05,
+                Strength = 8,
+                TypeName = "Elite",
+                MaxRotationSpeed = 0
+            };
+            ChancesLineConfiguration lChances3 = new ChancesLineConfiguration()
+            {
+                MaxChance = 0.015,
+                MaxChanceScore = 40000,
+                MinChance = 0.00,
+                MinChanceScore = 10000
             };
 
             mAsteroidTypes.Add(lType1, lChances1);
             mAsteroidTypes.Add(lType2, lChances2);
+            mAsteroidTypes.Add(lType3, lChances3);
         }
 
         void LevelManagerElapsed(object sender, ElapsedEventArgs e)
         {
-            (sender as Timer).Stop();
+            (sender as System.Timers.Timer).Stop();
             if (mRocket != null && mAsteroidGenerator != null)
             {
                 lock (mLock)
@@ -127,7 +159,7 @@ namespace GameTest2
                     }
                 }
             }
-            (sender as Timer).Start();
+            (sender as System.Timers.Timer).Start();
         }
 
         private void keyDown(object sender, KeyEventArgs e)
@@ -179,7 +211,7 @@ namespace GameTest2
             {
                 lock (mLock)
                 {
-                    mRocket = new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mMissileBitmapFrame, mExplosionBitmapFrame, 96, 64,
+                    mRocket = new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mMissileBitmapFrame, mExplosion2BitmapFrame, 96, 64,
                         new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
                         new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
 
@@ -232,7 +264,7 @@ namespace GameTest2
             switch (aAction)
             {
                 case EControlAction.GameOver:
-                    StopGame();
+                    StopGameDelayed(2000);
                     break;
                 default:
                     break;
@@ -253,6 +285,32 @@ namespace GameTest2
                 }
             }
         }
+        private void StopGameDelayed(double aTimeMs)
+        {
+            lock (mStopLock)
+            {
+                if (mStopTimer == null)
+                {
+                    mStopTimer = new Timer();
+                    mStopTimer.Interval = aTimeMs;
+                    mStopTimer.Elapsed += new ElapsedEventHandler((x, y) =>
+                    {
+                        mStopTimer.Stop();
+                        mStopTimer.Dispose();
+                        mStopTimer = null;
+
+                        this.Dispatcher.Invoke(new Action(() =>
+                        {
+                            StopGame();
+                        }));
+                    });
+
+                    mStopTimer.Start();
+                }
+            }
+        }
+        private Timer mStopTimer;
+        private object mStopLock = new object();
         private void StopGame()
         {
             MainWindowViewModel lContext = this.DataContext as MainWindowViewModel;
@@ -264,6 +322,7 @@ namespace GameTest2
                     lock (mLock)
                     {
                         mRocket = null;
+                        lContext.Rocket = null;
                         mAsteroidGenerator = null;
                     }
                     mGameRoom.Reset();
@@ -288,25 +347,23 @@ namespace GameTest2
             }
         }
 
-        private Timer mLevelManager = new Timer();
+        private System.Timers.Timer mLevelManager = new System.Timers.Timer();
 
         Random mRandom = new Random();
 
         private BitmapFrame mAsteroidBitmapFrame;
         private BitmapFrame mAsteroid2BitmapFrame;
+        private BitmapFrame mAsteroid3BitmapFrame;
         private BitmapFrame mRocketBitmapFrame;
         private BitmapFrame mProjectileBitmapFrame;
         private BitmapFrame mExplosionBitmapFrame;
+        private BitmapFrame mExplosion2BitmapFrame;
         private BitmapFrame mMissileBitmapFrame;
 
         private Rocket mRocket;
         private AsteroidGenerator mAsteroidGenerator;
 
         private object mLock = new object();
-
-        private double mMinChance = 0.005;
-        private double mMaxChance = 0.5;
-        private double mMaxChanceScore = 100000;
 
         private Dictionary<AsteroidType, ChancesLineConfiguration> mAsteroidTypes = new Dictionary<AsteroidType, ChancesLineConfiguration>();
 

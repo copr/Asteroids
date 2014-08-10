@@ -20,10 +20,11 @@ namespace GameTest2
             AsteroidSettings aSettings)
             : base(aSettings.Size, aSettings.Size, aBitmapFrame, aPosition, aDirection, aSpeed)
         {
+            RotateImage(Direction);
+
             mHealth = 1;
             Random lRandom = new Random();
-            mAngle = lRandom.NextDouble() * 360;
-            mRotationSpeed = lRandom.NextDouble() * 4 - 2;
+            mAngle = Direction;
             mExplosionFrame = aExplosionFrame;
 
             mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
@@ -50,12 +51,12 @@ namespace GameTest2
             lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame,
                 Position,
                 lAngle - 90 + mRandom.NextDouble() * 180,
-                1.4 * Speed,
+                1.1 * Speed,
                 aChild1Settings));
             lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame,
                 Position,
                 lAngle - 90 + mRandom.NextDouble() * 180,
-                1.4 * Speed,
+                1.1 * Speed,
                 aChild2Settings));
 
             foreach (Asteroid a in lChildren)
@@ -68,7 +69,7 @@ namespace GameTest2
         {
             base.ClockTick();
             
-            mAngle += mRotationSpeed;
+            mAngle += mSettings.RotationSpeed;
             RotateImage(mAngle);
             if (InvincibleSteps > 0)
                 InvincibleSteps--;
@@ -128,7 +129,7 @@ namespace GameTest2
                     {
                         Destroy();
                         DestroyEffect();
-                        CreateChildren();
+                        //CreateChildren();
                     }
                     else
                     {
@@ -150,9 +151,12 @@ namespace GameTest2
                 return mSettings.Strength;
             }
         }
+        public double Size
+        {
+            get { return mSettings.Size; }
+        }
 
         private double mAngle;
-        private double mRotationSpeed;
         private BitmapFrame mExplosionFrame;
 
         private AsteroidSettings mSettings;

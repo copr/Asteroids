@@ -11,6 +11,9 @@
     <BitmapImage x:Key="Asteroid2">
         Image/asteroid2.png
     </BitmapImage>
+    <BitmapImage x:Key="Asteroid3">
+        Image/asteroid3.png
+    </BitmapImage>
     <BitmapImage x:Key="Rocket">
         Image/rocket2.png
     </BitmapImage>
@@ -19,6 +22,9 @@
     </BitmapImage>
     <BitmapImage x:Key="Explosion">
         Image/explosion.png
+    </BitmapImage>
+    <BitmapImage x:Key="Explosion2">
+        Image/explosion2.png
     </BitmapImage>
     <BitmapImage x:Key="Rocket2">
         Image/rocket.png

@@ -73,19 +73,18 @@ namespace GameTest2
         }
         public int HighScorePosition(int aScore)
         {
-            if (IsHighScore(aScore))
+            if (HighScoresList.Count == 0)
             {
-                int lIndex = 0;
-                while (HighScoresList[lIndex].Score >= aScore && lIndex < HighScoresList.Count)
+                return 0;
+            }
+            for (int i = 0; i < HighScoresList.Count; i++)
+            {
+                if (aScore > HighScoresList[i].Score)
                 {
-                    lIndex++;
+                    return i;
                 }
-                return lIndex;
             }
-            else
-            {
-                return -1;
-            }
+            return -1;
         }
         private void Sort()
         {

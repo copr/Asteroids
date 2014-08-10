@@ -69,6 +69,8 @@ namespace GameTest2
                 }
             }
 
+            double lRotationSpeed = (mRandom.NextDouble() - .5) * 2 * aType.MaxRotationSpeed;
+
             AsteroidSettings lSettings = new AsteroidSettings()
             {
                 MinSizeForChildren = aType.MinSizeForChildren,
@@ -77,12 +79,15 @@ namespace GameTest2
                 Size = lAsteroidSize,
                 Strength = aType.Strength,
                 TypeName = aType.TypeName,
-                PointsMultiplier = aType.PointsMultiplier
+                PointsMultiplier = aType.PointsMultiplier,
+                RotationSpeed = lRotationSpeed
             };
+
+            double lSpeed = aType.MinSpeed + mRandom.NextDouble() * (aType.MaxSpeed - aType.MinSpeed);
 
             return new Asteroid(aType.BitmapFrame, aType.ExplosionFrame,
                 new Point(lAsteroidX, lAsteroidY),
-                lDirection, mRandom.NextDouble() * 3 + 1,
+                lDirection, lSpeed,
                 lSettings);
         }
 
