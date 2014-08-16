@@ -26,7 +26,7 @@ namespace GameTest2
             {
                 mReadyTimeout--;
             }
-            mTemperature -= 1;
+            mTemperature--;
             if (mTemperature < 0)
             {
                 mTemperature = 0;
@@ -48,7 +48,7 @@ namespace GameTest2
 
             mCanShoot = false;
             mTemperature += OverheatCoefficient;
-            mReadyTimeout = (int)(mTemperature / 4);
+            mReadyTimeout = (int)(mTemperature / 16);
         }
         public double AimDirection
         {

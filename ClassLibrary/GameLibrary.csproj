@@ -50,7 +50,6 @@
     <Compile Include="AsteroidGenerator.cs" />
     <Compile Include="AsteroidSettings.cs" />
     <Compile Include="AsteroidType.cs" />
-    <Compile Include="BaseViewModel.cs" />
     <Compile Include="BasicProjectile.cs" />
     <Compile Include="ChancesLineConfiguration.cs" />
     <Compile Include="Explosion.cs" />

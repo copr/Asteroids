@@ -33,6 +33,8 @@ namespace Engine
         public override void ClockTick()
         {
             Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
+            
+            base.ClockTick();
         }
         public double Speed
         {

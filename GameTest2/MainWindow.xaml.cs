@@ -70,7 +70,7 @@ namespace GameTest2
                 MaxSpeed = 4,
                 MissileDamage = 1,
                 PointsMultiplier = 1,
-                ProjectileDamage = 0.5,
+                ProjectileDamage = 1,
                 Strength = 1,
                 TypeName = "Basic",
                 MaxRotationSpeed = 4
@@ -91,7 +91,7 @@ namespace GameTest2
                 MinSizeForChildren = 32,
                 MinSpeed = 2,
                 MaxSpeed = 3,
-                MissileDamage = .5,
+                MissileDamage = 0.5,
                 PointsMultiplier = 2.5,
                 ProjectileDamage = 0.2,
                 Strength = 2,
@@ -114,7 +114,7 @@ namespace GameTest2
                 MinSizeForChildren = 96,
                 MinSpeed = 8,
                 MaxSpeed = 12,
-                MissileDamage = 1,
+                MissileDamage = 0.5,
                 PointsMultiplier = 3.5,
                 ProjectileDamage = 0.05,
                 Strength = 8,
@@ -222,9 +222,6 @@ namespace GameTest2
                         mAsteroidGenerator.AddAsteroidType(lType.Key);
                     }
                     lContext.Rocket = mRocket;
-
-                    //ActualScoreLabel.DataContext = mRocket;
-                    //HealthBar.DataContext = mRocket;
 
                     mGameRoom.InvokeAction(ERoomAction.AddObject, mRocket);
                     mGameRoom.InvokeAction(ERoomAction.AddObject, mAsteroidGenerator);

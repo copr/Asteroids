@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
+using Engine;
+
 namespace GameTest2
 {
     public class HighScoresViewModel : BaseViewModel

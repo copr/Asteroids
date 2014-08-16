@@ -19,13 +19,16 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
-            foreach (var lType in mAsteroidsTypes)
+            lock (mAsteroidsTypes)
             {
-                double lRandom = mRandom.NextDouble();
-
-                if (lRandom < lType.Value)
+                foreach (var lType in mAsteroidsTypes)
                 {
-                    RaiseRoomActionEvent(ERoomAction.AddObject, CreateAsteroid(lType.Key));
+                    double lRandom = mRandom.NextDouble();
+
+                    if (lRandom < lType.Value)
+                    {
+                        RaiseRoomActionEvent(ERoomAction.AddObject, CreateAsteroid(lType.Key));
+                    }
                 }
             }
         }
@@ -93,26 +96,38 @@ namespace GameTest2
 
         public void SetChance(AsteroidType aType, double aNewChance)
         {
-            if (mAsteroidsTypes.ContainsKey(aType))
+            lock (mAsteroidsTypes)
             {
-                mAsteroidsTypes[aType] = aNewChance;
+                if (mAsteroidsTypes.ContainsKey(aType))
+                {
+                    mAsteroidsTypes[aType] = aNewChance;
+                }
             }
 
         }
         public void AddAsteroidType(AsteroidType aNewType, double aChance = 0)
         {
-            mAsteroidsTypes.Add(aNewType, aChance);
+            lock (mAsteroidsTypes)
+            {
+                mAsteroidsTypes.Add(aNewType, aChance);
+            }
         }
         public void DeleteAsteroidType(AsteroidType aType)
         {
-            if (mAsteroidsTypes.ContainsKey(aType))
+            lock (mAsteroidsTypes)
             {
-                mAsteroidsTypes.Remove(aType);
+                if (mAsteroidsTypes.ContainsKey(aType))
+                {
+                    mAsteroidsTypes.Remove(aType);
+                }
             }
         }
         public void ClearAsteroidTypes()
         {
-            mAsteroidsTypes.Clear();
+            lock (mAsteroidsTypes)
+            {
+                mAsteroidsTypes.Clear();
+            }
         }
 
         private Dictionary<AsteroidType, double> mAsteroidsTypes = new Dictionary<AsteroidType, double>();

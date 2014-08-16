@@ -25,21 +25,15 @@ namespace GameTest2
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aVerticalSpeed, aHorizontalSpeed)
         {
             mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
+
+            CollisionMask.Add(new Circle(Math.Min(aWidth, aHeight) / 3.0, this.Position, 0, 0));
             Depth = -10;
             mMaxTurnDegrees = aMaxTurnDegrees;
         }
 
-        public override double CollisionRadius
-        {
-            get
-            {
-                return (Image.Width / 2) * 0.8;
-            }
-        }
-
         public override void ClockTick()
         {
-            RotateImage(Direction);
+            SetImageAngle(Direction);
             if (mTarget != null)
             {
                 double lDirectionToTarget = 180 / Math.PI * Math.Atan2(mTarget.Position.Y - this.Position.Y, mTarget.Position.X - this.Position.X);
@@ -71,6 +65,8 @@ namespace GameTest2
 
                 mVerticalSpeed = lSpeed * Math.Sin(lNewDirection * Math.PI / 180);
                 mHorizontalSpeed = lSpeed * Math.Cos(lNewDirection * Math.PI / 180);
+
+                mAngle = lNewDirection;
             }
 
             base.ClockTick();

@@ -25,18 +25,12 @@ namespace GameTest2
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aVerticalSpeed, aHorizontalSpeed)
         {
             mCollisionBehavior.Add(typeof(Asteroid), DefaultCollisionSolve);
+            CollisionMask.Add(new Circle(5.0 / 16 * aWidth, this.Position, 0, 0));
             Depth = -10;
         }
         public override void ClockTick()
         {
             base.ClockTick();
-        }
-        public override double CollisionRadius
-        {
-            get
-            {
-                return (Image.Width / 2) * 0.8;
-            }
         }
         public Rocket Owner
         {

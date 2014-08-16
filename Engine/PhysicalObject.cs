@@ -27,7 +27,8 @@ namespace Engine
         }
 
         #endregion
-        protected void RotateImage(double aAngle)
+        #region Methods
+        protected void SetImageAngle(double aAngle)
         {
             RotateTransform lRotateTransform = new RotateTransform();
             lRotateTransform.Angle = aAngle;
@@ -56,32 +57,60 @@ namespace Engine
         {
 
         }
-
-        protected bool IsCollision(PhysicalObject o)
-        {
-            return (Distance(o) < CollisionRadius + o.CollisionRadius && mInvincibleSteps == 0);
-        }
-
+        
         protected void DefaultCollisionSolve(PhysicalObject o)
         {
-            if (IsCollision(o))
-            {
-                Destroy();
-                DestroyEffect();
-            }
+            Destroy();
+            DestroyEffect();
         }
 
-        public void SolveCollision(PhysicalObject o)
+        public void SolveIfCollision(PhysicalObject o)
         {
-            if (!IsDestroyed)
+            if (!IsDestroyed && mInvincibleSteps == 0)
             {
-                ActionWithObject<PhysicalObject> lAction;
-                if (mCollisionBehavior.TryGetValue(o.GetType(), out lAction))
+                bool lIsCollision = false;
+                foreach (var lMyCollisionMask in CollisionMask)
                 {
-                    lAction(o);
+                    foreach (var lOthersCollisionmask in o.CollisionMask)
+                    {
+                        if (lMyCollisionMask.IsCollision(lOthersCollisionmask))
+                        {
+                            lIsCollision = true;
+                            break;
+                        }
+                    }
+                    if (lIsCollision)
+                    {
+                        break;
+                    }
+                }
+
+                if (lIsCollision)
+                {
+                    SolveCollision(o);
                 }
             }
         }
+        protected void SolveCollision(PhysicalObject o)
+        {
+            ActionWithObject<PhysicalObject> lAction;
+            if (mCollisionBehavior.TryGetValue(o.GetType(), out lAction))
+            {
+                lAction(o);
+            }
+        }
+
+        public override void ClockTick()
+        {
+            foreach (var lCollisionMask in CollisionMask)
+            {
+                lCollisionMask.SetPosition(this.mPosition, this.mAngle);
+            }
+            if (mInvincibleSteps > 0)
+                mInvincibleSteps--;
+        }
+
+        #endregion
 
         #region Properties
         public int Depth
@@ -93,6 +122,10 @@ namespace Engine
             set
             {
                 Canvas.SetZIndex(mImage, value);
+                foreach (var lCollisionMask in CollisionMask)
+                {
+                    lCollisionMask.Depth = value + 1;
+                }
             }
         }
         public Point Position
@@ -120,13 +153,11 @@ namespace Engine
                 return mOutsideSize;
             }
         }
-        public virtual double CollisionRadius
+        public double Angle
         {
-            get
-            {
-                return double.MinValue;
-            }
+            get { return mAngle; }
         }
+
         public virtual EOutsideRoomAction OutsideRoomAction
         {
             get
@@ -134,9 +165,21 @@ namespace Engine
                 return EOutsideRoomAction.Destroy;
             }
         }
-
+        public List<CollisionMask> CollisionMask
+        {
+            get
+            {
+                return mCollisionMask;
+            }
+            set
+            {
+                mCollisionMask = value;
+            }
+        }
         #endregion
         #region Members
+
+        private List<CollisionMask> mCollisionMask = new List<CollisionMask>();
 
         private int mInvincibleSteps = 0;
         protected int InvincibleSteps
@@ -161,6 +204,8 @@ namespace Engine
         };
         private Point mPosition = new Point();
         private double mOutsideSize;
+
+        protected double mAngle;
         #endregion
     }
 }

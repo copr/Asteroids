@@ -33,40 +33,52 @@ namespace GameTest2
         {
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
-
+            mAngle = -90;
             Health = mMaxHealth;
 
             InvincibleSteps = 60;
 
-            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame) { OverheatCoefficient = 6 };
+            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame) { OverheatCoefficient = 16 };
             mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
 
             mPrimaryGun.Owner = this;
             mMissileLauncher.Owner = this;
+
+            //Napasování kolizní masky na konkrétní raketu!!
+            //Při změně obrázku nebo velikosti je třeba změnit
+            
+            CollisionMask.Add(new Circle(24, Position, 8, 0));
+            CollisionMask.Add(new Circle(12, Position, 33, 0));
+            CollisionMask.Add(new Circle(20, Position, 16, 180));
+
+            CollisionMask.Add(new Circle(10, Position, 28, 135));
+            CollisionMask.Add(new Circle(10, Position, 28, -135));
+
+
+            CollisionMask.Add(new Circle(6, Position, 44, 145));
+            CollisionMask.Add(new Circle(6, Position, 44, -145));
+            
+            Depth = 0;
         }
         public override void Initialize()
         {
             RaiseRoomActionEvent(ERoomAction.AddObject, mPrimaryGun);
             RaiseRoomActionEvent(ERoomAction.AddObject, mMissileLauncher);
         }
-
         private void CollisionWithAsteroid(PhysicalObject o)
         {
-            if (IsCollision(o))
+            if (o is Asteroid)
             {
-                if (o is Asteroid)
+                Asteroid lAsteroid = o as Asteroid;
+                int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
+
+                Health -= lEnergyLoss * lAsteroid.Strength;
+
+                if (Health <= 0.0)
                 {
-                    Asteroid lAsteroid = o as Asteroid;
-                    int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
-
-                    Health -= lEnergyLoss * lAsteroid.Strength;
-
-                    if (Health <= 0.0)
-                    {
-                        Destroy();
-                        DestroyEffect();
-                        GameOver();
-                    }
+                    Destroy();
+                    DestroyEffect();
+                    GameOver();
                 }
             }
         }
@@ -77,14 +89,6 @@ namespace GameTest2
         protected override void DestroyEffect()
         {
             RaiseRoomActionEvent(ERoomAction.AddObject, new Explosion(mExplosionFrame, 1.8 * Image.Width, 1.8 * Image.Width, Position));
-        }
-        public override double CollisionRadius
-        {
-            get
-            {
-                return (Image.Width / 2) * 0.8;
-            }
-
         }
 
         public override void KeyDown(KeyEventArgs e)
@@ -135,13 +139,10 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
-            if (InvincibleSteps > 0)
-                InvincibleSteps--;
-
-            Score = Score + 1;
+            Score++;
             //Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
-            RotateImage(mAngle);
+            SetImageAngle(mAngle);
 
             //Translation
             mVerticalSpeed += mAcceleration * mAccelerationSign * Math.Sin(mAngle * Math.PI / 180);
@@ -177,6 +178,8 @@ namespace GameTest2
             {
                 mMissileLauncher.ShootRequest();
             }
+
+            base.ClockTick();
         }
 
         public override EOutsideRoomAction OutsideRoomAction
@@ -237,7 +240,6 @@ namespace GameTest2
             
         private BitmapFrame mExplosionFrame;
 
-        private double mAngle = -90;
         private double cAngleChangeSpeed = 5;
         private double mAngleChangeSign = 0;
 

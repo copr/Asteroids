@@ -20,8 +20,7 @@ namespace GameTest2
             AsteroidSettings aSettings)
             : base(aSettings.Size, aSettings.Size, aBitmapFrame, aPosition, aDirection, aSpeed)
         {
-            RotateImage(Direction);
-
+            SetImageAngle(Direction);
             mHealth = 1;
             Random lRandom = new Random();
             mAngle = Direction;
@@ -35,11 +34,15 @@ namespace GameTest2
             InvincibleSteps = 20;
 
             mSettings = aSettings;
+
+            CollisionMask.Add(new Circle(mSettings.Size / 2 * 4.5 / 5, this.Position, 0, 0)); 
+            Depth = -1;
         }
 
         private void CreateChildren()
         {
-            double lAngle = 360 * mRandom.NextDouble();
+            double lDirection1 = Direction + 10 + 30 * mRandom.NextDouble();
+            double lDirection2 = Direction - 10 - 30 * mRandom.NextDouble();
 
             List<Asteroid> lChildren = new List<Asteroid>();
 
@@ -50,12 +53,12 @@ namespace GameTest2
 
             lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame,
                 Position,
-                lAngle - 90 + mRandom.NextDouble() * 180,
+                lDirection1,
                 1.1 * Speed,
                 aChild1Settings));
             lChildren.Add(new Asteroid((BitmapFrame)Image.Source, mExplosionFrame,
                 Position,
-                lAngle - 90 + mRandom.NextDouble() * 180,
+                lDirection2,
                 1.1 * Speed,
                 aChild2Settings));
 
@@ -67,65 +70,22 @@ namespace GameTest2
 
         public override void ClockTick()
         {
-            base.ClockTick();
-            
             mAngle += mSettings.RotationSpeed;
-            RotateImage(mAngle);
-            if (InvincibleSteps > 0)
-                InvincibleSteps--;
-        }
-        public override double CollisionRadius
-        {
-            get
-            {
-                return (Image.Width / 2) * 0.8;
-            }
+            SetImageAngle(mAngle);
+
+            base.ClockTick();
         }
         private void CollisionWithAsteroid(PhysicalObject o)
         {
             if (o is Asteroid)
             {
-                if (IsCollision(o))
+                if (Strength > (o as Asteroid).Strength)
                 {
-                    if (Strength > (o as Asteroid).Strength)
-                    {
-                        mHealth -= (o as Asteroid).Size / ((o as Asteroid).Size + Size);
-                    }
-                    else
-                    {
-                        mHealth = 0;
-                    }
-
-                    if (mHealth <= 0)
-                    {
-                        if (mSettings.Size > mSettings.MinSizeForChildren)
-                        {
-                            Destroy();
-                            DestroyEffect();
-                            CreateChildren();
-                        }
-                        else
-                        {
-                            Destroy();
-                            DestroyEffect();
-                        }
-                    }
+                    mHealth -= (o as Asteroid).Size / ((o as Asteroid).Size + Size);
                 }
-            }
-        }
-        private void CollisionWithProjectile(PhysicalObject o)
-        {
-            if (IsCollision(o))
-            {
-                if (o is BasicProjectile)
+                else
                 {
-                    (o as BasicProjectile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
-                    mHealth -= mSettings.ProjectileDamage;
-                }
-                if (o is GuidedMissile)
-                {
-                    (o as GuidedMissile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
-                    mHealth -= mSettings.MissileDamage;
+                    mHealth = 0;
                 }
 
                 if (mHealth <= 0)
@@ -134,13 +94,41 @@ namespace GameTest2
                     {
                         Destroy();
                         DestroyEffect();
-                        //CreateChildren();
+                        CreateChildren();
                     }
                     else
                     {
                         Destroy();
                         DestroyEffect();
                     }
+                }
+            }
+        }
+        private void CollisionWithProjectile(PhysicalObject o)
+        {
+            if (o is BasicProjectile)
+            {
+                (o as BasicProjectile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
+                mHealth -= mSettings.ProjectileDamage;
+            }
+            if (o is GuidedMissile)
+            {
+                (o as GuidedMissile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
+                mHealth -= mSettings.MissileDamage;
+            }
+
+            if (mHealth <= 0)
+            {
+                if (mSettings.Size > mSettings.MinSizeForChildren)
+                {
+                    Destroy();
+                    DestroyEffect();
+                    //CreateChildren();
+                }
+                else
+                {
+                    Destroy();
+                    DestroyEffect();
                 }
             }
         }
@@ -161,7 +149,6 @@ namespace GameTest2
             get { return mSettings.Size; }
         }
 
-        private double mAngle;
         private BitmapFrame mExplosionFrame;
 
         private AsteroidSettings mSettings;

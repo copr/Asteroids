@@ -146,7 +146,13 @@ namespace EngineGui
         {
             if (o is PhysicalObject)
             {
-                mCanvas.Children.Add(((PhysicalObject)o).Image);
+                var po = o as PhysicalObject;
+                mCanvas.Children.Add(po.Image);
+
+                foreach (var lCollisionMask in po.CollisionMask)
+                {
+                    mCanvas.Children.Add(lCollisionMask.Image);
+                }
             }
 
             o.GameRoom = this;
@@ -156,10 +162,22 @@ namespace EngineGui
         }
         private void Repaint()
         {
+            int lGlobalOffsetX = 0;
+            int lGlobalOffsetY = 0;
+
             foreach (PhysicalObject o in mObjects.OfType<PhysicalObject>())
             {
-                Canvas.SetLeft(o.Image, o.Position.X - o.Image.Width / 2);
-                Canvas.SetTop(o.Image, o.Position.Y - o.Image.Height / 2);
+                Canvas.SetLeft(o.Image, o.Position.X - o.Image.Width / 2 + lGlobalOffsetX);
+                Canvas.SetTop(o.Image, o.Position.Y - o.Image.Height / 2 + lGlobalOffsetY);
+
+                foreach (var lCollisionMask in o.CollisionMask)
+                {
+                    if (lCollisionMask.IsVisible)
+                    {
+                        Canvas.SetLeft(lCollisionMask.Image, lCollisionMask.Position.X - lCollisionMask.Image.Width / 2 + lGlobalOffsetX);
+                        Canvas.SetTop(lCollisionMask.Image, lCollisionMask.Position.Y - lCollisionMask.Image.Height / 2 + lGlobalOffsetY);
+                    }
+                }
             }
         }
         private void DealWithOutsideObjects()
@@ -209,6 +227,11 @@ namespace EngineGui
             {
                 PhysicalObject po = (PhysicalObject)o;
                 mCanvas.Children.Remove(po.Image);
+
+                foreach (var lCollisionMask in po.CollisionMask)
+                {
+                    mCanvas.Children.Remove(lCollisionMask.Image);
+                }
             }
             mObjects.Remove(o);
         }
@@ -220,8 +243,7 @@ namespace EngineGui
                 {
                     if (o1 != o2)
                     {
-                        if (!o1.IsDestroyed)
-                            o1.SolveCollision(o2);
+                        o1.SolveIfCollision(o2);
                     }
                 }
             }

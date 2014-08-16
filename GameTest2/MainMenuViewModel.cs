@@ -5,6 +5,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Windows;
 
+using Engine;
+
 namespace GameTest2
 {
     public class MainMenuViewModel : BaseViewModel
