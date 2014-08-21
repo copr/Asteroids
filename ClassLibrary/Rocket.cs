@@ -28,17 +28,23 @@ namespace GameTest2
             BitmapFrame aBitmapFrame, BitmapFrame aProjectileBitmapFrame,
             BitmapFrame aMissileBitmapFrame,
             BitmapFrame aExplosionFrame, double aWidth, double aHeight,
-            Point aPosition, List<Key> aKeys)
+            Point aPosition, List<Key> aKeys,
+            double aInitialAngle = -90,
+            double aInitialSpeed = 0)
             : base(aBitmapFrame, aWidth, aHeight, aPosition, aKeys)
         {
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
-            mAngle = -90;
+            mAngle = aInitialAngle;
+
+            mVerticalSpeed = aInitialSpeed * Math.Sin(mAngle * Math.PI / 180);
+            mHorizontalSpeed = aInitialSpeed * Math.Cos(mAngle * Math.PI / 180);
+
             Health = mMaxHealth;
 
             InvincibleSteps = 60;
 
-            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame) { OverheatCoefficient = 16 };
+            mPrimaryGun = new PrimaryGun(this.Position, aProjectileBitmapFrame) { OverheatCoefficient = 10 };
             mMissileLauncher = new MissileLauncher(this.Position, aMissileBitmapFrame);
 
             mPrimaryGun.Owner = this;

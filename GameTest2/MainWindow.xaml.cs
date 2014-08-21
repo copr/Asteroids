@@ -212,8 +212,10 @@ namespace GameTest2
                 lock (mLock)
                 {
                     mRocket = new Rocket(mRocketBitmapFrame, mProjectileBitmapFrame, mMissileBitmapFrame, mExplosion2BitmapFrame, 96, 64,
-                        new Point(mGameRoom.RoomWidth / 2, mGameRoom.RoomHeight / 2),
-                        new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift });
+                        new Point(mGameRoom.RoomWidth / 2, 2 * mGameRoom.RoomHeight / 3),
+                        new List<Key> { Key.Up, Key.Down, Key.Left, Key.Right, Key.LeftCtrl, Key.LeftShift },
+                        -90, 0.4
+                        );
 
                     mAsteroidGenerator = new AsteroidGenerator();
 
