@@ -32,6 +32,9 @@
     <BitmapImage x:Key="Missile">
         Image/missile.png
     </BitmapImage>
+    <BitmapImage x:Key="Health">
+        Image/Hospital-128.png
+    </BitmapImage>
     <BitmapImage x:Key="RedSquare">
         Image/red_square.bmp
     </BitmapImage>

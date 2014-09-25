@@ -35,6 +35,7 @@ namespace GameTest2
         {
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
+            mCollisionBehavior.Add(typeof(Bonus), CollisionWithBonus);
             mAngle = aInitialAngle;
 
             mVerticalSpeed = aInitialSpeed * Math.Sin(mAngle * Math.PI / 180);
@@ -67,6 +68,21 @@ namespace GameTest2
             
             Depth = 0;
         }
+
+        private void CollisionWithBonus(PhysicalObject o)
+        {
+            if (o is Bonus)
+            {
+                Bonus lBonus = (Bonus)o;
+                Health = Health + lBonus.Health;
+                if (Health > mMaxHealth)
+                {
+                    Health = mMaxHealth;
+                }
+                mMissileLauncher.ShootingDuration = mMissileLauncher.ShootingDuration + lBonus.MissileTime*100; //podle ticku
+                Invulnerability += Invulnerability + lBonus.Invulnerability*100;
+            }
+        }
         public override void Initialize()
         {
             RaiseRoomActionEvent(ERoomAction.AddObject, mPrimaryGun);
@@ -79,8 +95,10 @@ namespace GameTest2
                 Asteroid lAsteroid = o as Asteroid;
                 int lEnergyLoss = (int)Math.Floor((o.Image.Height > o.Image.Width) ? o.Image.Height : o.Image.Width / 10);
 
+                if (!(mInvulnerability > 0))
+                {
                 Health -= lEnergyLoss * lAsteroid.Strength;
-
+                }
                 if (Health <= 0.0)
                 {
                     Destroy();
@@ -146,11 +164,12 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
-            Score++;
-            //Rotation
+            Invulnerability = Invulnerability - 1;
+            #region Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
 
-            //Translation
+            #endregion
+            #region Translation
             mVerticalSpeed += mAcceleration * mAccelerationSign * Math.Sin(mAngle * Math.PI / 180);
             mHorizontalSpeed += mAcceleration * mAccelerationSign * Math.Cos(mAngle * Math.PI / 180);
 
@@ -171,9 +190,11 @@ namespace GameTest2
             //Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
 
             //Shooting
+            #endregion
+            #region Shooting
             mPrimaryGun.Position = this.Position;
             mPrimaryGun.AimDirection = this.mAngle;
-
+            
             mMissileLauncher.Position = this.Position;
             mMissileLauncher.AimDirection = this.mAngle;
             
@@ -185,7 +206,7 @@ namespace GameTest2
             {
                 mMissileLauncher.ShootRequest();
             }
-
+            #endregion
             base.ClockTick();
         }
 
@@ -197,20 +218,10 @@ namespace GameTest2
             }
         }
 
-        private int mScore;
-
-        public int Score
-        {
-            get
+        public Score Score
             {
-                return mScore;
-            }
-            set
-            {
-                if (mScore == value) return;
-                mScore = value;
-                OnPropertyChanged("Score");
-            }
+            get { return mScore; }
+            set { mScore = value; }
         }
 
         private double mHealth;
@@ -244,6 +255,22 @@ namespace GameTest2
                 return mHealth / mMaxHealth * 100d;
             }
         }
+        public double Invulnerability {
+            get
+            {
+                return mInvulnerability;
+            }
+            set 
+            {
+                if(mInvulnerability < 0)
+                {
+                    mInvulnerability = 0;
+                } else
+                {
+                    mInvulnerability = value;
+                }
+            } 
+        }
             
         private BitmapFrame mExplosionFrame;
 
@@ -256,10 +283,14 @@ namespace GameTest2
         private double mAccelerationSign = 0;
         private double mMaxSpeed = 8;
 
+        private double mInvulnerability = 0;
+
         private bool mWantShootGun = false; 
         private bool mWantShootMissile = false;
 
         private PrimaryGun mPrimaryGun;
         private MissileLauncher mMissileLauncher;
+
+        private Score mScore = new Score();
     }
 }

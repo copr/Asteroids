@@ -46,6 +46,7 @@ namespace GameTest2
             mExplosion2BitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion2"];
             mMissileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Missile"];
             mRedSquareBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["RedSquare"];
+            mBonusHealthBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Health"];
 
             mGameRoom.ControlActionEvent += InvokeAction;
 
@@ -54,8 +55,34 @@ namespace GameTest2
             mLevelManager.Elapsed += LevelManagerElapsed;
 
             GenerateAsteroidTypes();
+            GenerateBonusTypes();
 
             mLevelManager.Start();
+        }
+        private void GenerateBonusTypes()
+        {
+            BonusType lType1 = new BonusType()
+            {
+                BitmapFrame = mBonusHealthBitmapFrame,
+                Size = 30,
+                Speed = 5,
+                PlusHealth = 20,
+                PlusMissiles = 0,
+                Value = 0.005,
+                Invulnerability = 0
+            };
+            BonusType lType2 = new BonusType()
+            {
+                BitmapFrame = mMissileBitmapFrame,
+                Size = 30,
+                Speed = 2,
+                PlusHealth = 0,
+                PlusMissiles = 15,
+                Value = 0.005,
+                Invulnerability = 0
+            };
+            mBonusTypes.Add(lType1);
+            mBonusTypes.Add(lType2);
         }
 
         private void GenerateAsteroidTypes()
@@ -144,17 +171,20 @@ namespace GameTest2
                 {
                     foreach (var lType in mAsteroidTypes)
                     {
-                        if (mRocket.Score < lType.Value.MinChanceScore)
+                        //Score1
+                        if (mRocket.Score.Points < lType.Value.MinChanceScore)
                         {
                             mAsteroidGenerator.SetChance(lType.Key, lType.Value.MinChance);
                         }
-                        else if (mRocket.Score > lType.Value.MaxChanceScore)
+                        //Score1
+                        else if (mRocket.Score.Points > lType.Value.MaxChanceScore)
                         {
                             mAsteroidGenerator.SetChance(lType.Key, lType.Value.MaxChance);
                         }
                         else
                         {
-                            double lChance = ((double)mRocket.Score - lType.Value.MinChanceScore) / (lType.Value.MaxChanceScore - lType.Value.MinChanceScore) * (lType.Value.MaxChance - lType.Value.MinChance) + lType.Value.MinChance;
+                            //Score1
+                            double lChance = ((double)mRocket.Score.Points - lType.Value.MinChanceScore) / (lType.Value.MaxChanceScore - lType.Value.MinChanceScore) * (lType.Value.MaxChance - lType.Value.MinChance) + lType.Value.MinChance;
                             mAsteroidGenerator.SetChance(lType.Key, lChance);
                         }
                     }
@@ -219,15 +249,21 @@ namespace GameTest2
                         );
 
                     mAsteroidGenerator = new AsteroidGenerator();
+                    mBonusGenerator = new BonusGenerator();
 
                     foreach (var lType in mAsteroidTypes)
                     {
                         mAsteroidGenerator.AddAsteroidType(lType.Key);
                     }
+                    foreach (var lType in mBonusTypes)
+                    {
+                        mBonusGenerator.AddBonusType(lType);
+                    }
                     lContext.Rocket = mRocket;
 
                     mGameRoom.InvokeAction(ERoomAction.AddObject, mRocket);
                     mGameRoom.InvokeAction(ERoomAction.AddObject, mAsteroidGenerator);
+                    mGameRoom.InvokeAction(ERoomAction.AddObject, mBonusGenerator);
 
                     mGameRoom.Run();
 
@@ -318,7 +354,7 @@ namespace GameTest2
             {
                 if (lContext.GameRunning)
                 {
-                    int lScore = mRocket.Score;
+                    Score lScore = mRocket.Score;
                     lock (mLock)
                     {
                         mRocket = null;
@@ -360,13 +396,16 @@ namespace GameTest2
         private BitmapFrame mExplosion2BitmapFrame;
         private BitmapFrame mMissileBitmapFrame;
         private BitmapFrame mRedSquareBitmapFrame;
+        private BitmapFrame mBonusHealthBitmapFrame;
 
         private Rocket mRocket;
         private AsteroidGenerator mAsteroidGenerator;
+        private BonusGenerator mBonusGenerator;
 
         private object mLock = new object();
 
         private Dictionary<AsteroidType, ChancesLineConfiguration> mAsteroidTypes = new Dictionary<AsteroidType, ChancesLineConfiguration>();
+        private List<BonusType> mBonusTypes = new List<BonusType>();
 
         private MainMenuViewModel mMainMenuViewModel;
         

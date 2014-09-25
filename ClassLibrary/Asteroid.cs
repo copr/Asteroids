@@ -21,7 +21,7 @@ namespace GameTest2
             : base(aSettings.Size, aSettings.Size, aBitmapFrame, aPosition, aDirection, aSpeed)
         {
             mHealth = 1;
-            Random lRandom = new Random();
+            //Random lRandom = new Random();
             mAngle = Direction;
             mExplosionFrame = aExplosionFrame;
 
@@ -111,12 +111,12 @@ namespace GameTest2
         {
             if (o is BasicProjectile)
             {
-                (o as BasicProjectile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
+                (o as BasicProjectile).Owner.Score.Points += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
                 mHealth -= mSettings.ProjectileDamage;
             }
             if (o is GuidedMissile)
             {
-                (o as GuidedMissile).Owner.Score += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
+                (o as GuidedMissile).Owner.Score.Points += (int)(Image.Width * 10 * mSettings.PointsMultiplier);
                 mHealth -= mSettings.MissileDamage;
             }
 

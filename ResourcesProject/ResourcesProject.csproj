@@ -108,6 +108,9 @@
     <Resource Include="Image\asteroid2.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Image\Hospital-128.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Image\red_square.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
