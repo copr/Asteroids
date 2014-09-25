@@ -36,7 +36,6 @@ namespace GameTest2
             mExplosionFrame = aExplosionFrame;
             mCollisionBehavior.Add(typeof(Asteroid), CollisionWithAsteroid);
             mCollisionBehavior.Add(typeof(Bonus), CollisionWithBonus);
-            mAngle = -90;
             mAngle = aInitialAngle;
 
             mVerticalSpeed = aInitialSpeed * Math.Sin(mAngle * Math.PI / 180);
