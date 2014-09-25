@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 using Engine;
 using System.Windows;
@@ -18,7 +19,14 @@ namespace GameTest2
         }
         public override void ClockTick()
         {
-
+            using(StreamWriter sw = new StreamWriter("log.txt",true))
+            {
+                sw.WriteLine(ShootingDuration);
+            }
+            if(--ShootingDuration < 0)
+            {
+                ShootingDuration = 0;
+            }
         }
 
         public override EOutsideRoomAction OutsideRoomAction
@@ -31,7 +39,10 @@ namespace GameTest2
 
         public void ShootRequest()
         {
-            Shoot();
+            if (ShootingDuration > 0)
+            {
+                Shoot();
+            }
         }
 
         private void OnTargetDestroyed(BaseObject aSender)
@@ -89,10 +100,22 @@ namespace GameTest2
             get;
             set;
         }
-
+        public double ShootingDuration
+        {
+            get
+            {
+                return mShootingDuration;
+            }
+            set
+            {
+                mShootingDuration = value;
+            }
+        }
         private BitmapFrame mProjectileImage;
         private List<PhysicalObject> mTargetedObjects = new List<PhysicalObject>();
         private double mAimDirection;
+        private double mShootingDuration = 0;
+       
 
     }
 }

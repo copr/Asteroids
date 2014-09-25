@@ -38,24 +38,24 @@ namespace GameTest2
         {
             HighScores.Serialize(mHighScores, mHighScoresPath);
         }
-        public void HandleNewScore(int aScore)
+        public void HandleNewScore(Score aScore)
         {
-            if (mHighScores.IsHighScore(aScore))
+            if (mHighScores.IsHighScore(aScore.Points))
             {
-                int lPosition = mHighScores.HighScorePosition(aScore);
+                int lPosition = mHighScores.HighScorePosition(aScore.Points);
                 DateTime lTime = DateTime.Now;
                 InputNamePopUp lWindow = new InputNamePopUp();
 
                 var lContext = lWindow.DataContext as InputNamePopUpViewModel;
                 if (lContext != null)
                 {
-                    lContext.NewScore = aScore;
+                    lContext.NewScore = aScore.Points;
                     lContext.Position = lPosition;
                 }
 
                 lWindow.ShowDialog();
 
-                mHighScores.AddHighScore(lWindow.NameTextBox.Text, aScore, lTime);
+                mHighScores.AddHighScore(lWindow.NameTextBox.Text, aScore.Points, lTime);
             }
         }
 
