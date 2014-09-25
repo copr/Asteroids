@@ -183,6 +183,7 @@ namespace GameTest2
 
             if (lTotalSpeed < 2 * mAcceleration / 3.0)
             {
+
                 mVerticalSpeed = 0;
                 mHorizontalSpeed = 0;
             }
