@@ -20,12 +20,13 @@ namespace Engine
             PositionOffsetAngle = aPositionOffsetAngle;
             mInitialAngle = mActualAngle = aInitialAngle;
 
-            IsVisible = false;
+            //Globaly set visibility of all collision masks in the game
+            IsVisible = true;
 
             SetPosition(aPosition, 0);
         }
         public abstract bool IsCollision(CollisionMask aOther);
-        public void SetPosition(Point aOwnerPosition, double aOwnerAngle)
+        public virtual void SetPosition(Point aOwnerPosition, double aOwnerAngle)
         {
             switch (mRotateBehavior)
             {
@@ -104,6 +105,7 @@ namespace Engine
                 {
                     mImage.Visibility = mLastSetVisible ? Visibility.Visible : Visibility.Hidden;
                     mImage.Opacity = 0.75;
+                    SetImageAngle(mInitialAngle);
                 }
             }
         }
@@ -121,13 +123,28 @@ namespace Engine
             }
         }
 
+        public abstract double HorizontalShift { get; }
+        public abstract double VerticalShift { get; }
+
         public Point Position { get { return mPosition; } }
         private Point mPosition;
 
+        /// <summary>
+        /// Distance from owners position
+        /// </summary>
         public double PositionOffsetDistance { get; set; }
+        /// <summary>
+        /// Angle from owner's position to mask's position
+        /// </summary>
         public double PositionOffsetAngle { get; set; }
 
+        /// <summary>
+        /// Angle of image when the angle of owner is 0
+        /// </summary>
         protected double mInitialAngle;
+        /// <summary>
+        /// Actual angle of image
+        /// </summary>
         protected double mActualAngle;
 
         public ERotateBehavior RotateBehavior { get { return mRotateBehavior; } }

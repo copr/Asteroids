@@ -174,8 +174,8 @@ namespace EngineGui
                 {
                     if (lCollisionMask.IsVisible)
                     {
-                        Canvas.SetLeft(lCollisionMask.Image, lCollisionMask.Position.X - lCollisionMask.Image.Width / 2 + lGlobalOffsetX);
-                        Canvas.SetTop(lCollisionMask.Image, lCollisionMask.Position.Y - lCollisionMask.Image.Height / 2 + lGlobalOffsetY);
+                        Canvas.SetLeft(lCollisionMask.Image, lCollisionMask.Position.X + lCollisionMask.HorizontalShift + lGlobalOffsetX);
+                        Canvas.SetTop(lCollisionMask.Image, lCollisionMask.Position.Y + lCollisionMask.VerticalShift + lGlobalOffsetY);
                     }
                 }
             }
@@ -237,16 +237,28 @@ namespace EngineGui
         }
         private void SolveCollisions()
         {
-            foreach (PhysicalObject o1 in mObjects.OfType<PhysicalObject>())
+            var lCollisionPairs = new List<Tuple<PhysicalObject, PhysicalObject>>();
+            var lPhysicalObjects = mObjects.OfType<PhysicalObject>().ToList();
+
+            for (int lIndex1 = 0; lIndex1 < lPhysicalObjects.Count - 1; lIndex1++)
             {
-                foreach (PhysicalObject o2 in mObjects.OfType<PhysicalObject>())
+                for (int lIndex2 = lIndex1 + 1; lIndex2 < lPhysicalObjects.Count; lIndex2++)
                 {
-                    if (o1 != o2)
-                    {
-                        o1.SolveIfCollision(o2);
-                    }
+                    var lObject1 = lPhysicalObjects[lIndex1];
+                    var lObject2 = lPhysicalObjects[lIndex2];
                 }
             }
+
+                foreach (PhysicalObject o1 in mObjects.OfType<PhysicalObject>())
+                {
+                    foreach (PhysicalObject o2 in mObjects.OfType<PhysicalObject>())
+                    {
+                        if (o1 != o2)
+                        {
+                            o1.SolveIfCollision(o2);
+                        }
+                    }
+                }
         }
 
         #endregion

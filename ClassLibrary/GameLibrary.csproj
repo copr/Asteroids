@@ -54,6 +54,8 @@
     <Compile Include="ChancesLineConfiguration.cs" />
     <Compile Include="Explosion.cs" />
     <Compile Include="GuidedMissile.cs" />
+    <Compile Include="Laser.cs" />
+    <Compile Include="LaserGun.cs" />
     <Compile Include="MissileLauncher.cs" />
     <Compile Include="PrimaryGun.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

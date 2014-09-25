@@ -64,31 +64,44 @@ namespace Engine
             DestroyEffect();
         }
 
-        public void SolveIfCollision(PhysicalObject o)
+        private bool IsValidCollision(PhysicalObject o)
         {
             if (!IsDestroyed && mInvincibleSteps == 0)
             {
-                bool lIsCollision = false;
-                foreach (var lMyCollisionMask in CollisionMask)
+                return IsCollision(o);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private bool IsCollision(PhysicalObject o)
+        {
+            bool lIsCollision = false;
+            foreach (var lMyCollisionMask in CollisionMask)
+            {
+                foreach (var lOthersCollisionmask in o.CollisionMask)
                 {
-                    foreach (var lOthersCollisionmask in o.CollisionMask)
+                    if (lMyCollisionMask.IsCollision(lOthersCollisionmask))
                     {
-                        if (lMyCollisionMask.IsCollision(lOthersCollisionmask))
-                        {
-                            lIsCollision = true;
-                            break;
-                        }
-                    }
-                    if (lIsCollision)
-                    {
+                        lIsCollision = true;
                         break;
                     }
                 }
-
                 if (lIsCollision)
                 {
-                    SolveCollision(o);
+                    break;
                 }
+            }
+            return lIsCollision;
+        }
+        public void SolveIfCollision(PhysicalObject o)
+        {
+            var lIsValidCollision = IsValidCollision(o);
+
+            if (lIsValidCollision)
+            {
+                SolveCollision(o);
             }
         }
         protected void SolveCollision(PhysicalObject o)
@@ -102,6 +115,7 @@ namespace Engine
 
         public override void ClockTick()
         {
+            SetImageAngle(mAngle);
             foreach (var lCollisionMask in CollisionMask)
             {
                 lCollisionMask.SetPosition(this.mPosition, this.mAngle);

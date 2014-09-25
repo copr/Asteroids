@@ -48,10 +48,31 @@ namespace Engine
 
                 return lSquaredDistance < (this.mRadius + lCircle.mRadius) * (this.mRadius + lCircle.mRadius);
             }
+            if (aOther is Ray)
+            {
+                return (aOther as Ray).IsCollision(this);
+            }
 
             return false;
         }
 
+        public double Radius
+        {
+            get
+            {
+                return mRadius;
+            }
+        }
         private double mRadius;
+
+        public override double HorizontalShift
+        {
+            get { return -Image.Height / 2; }
+        }
+
+        public override double VerticalShift
+        {
+            get { return -Image.Height / 2; }
+        }
     }
 }

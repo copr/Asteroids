@@ -8,10 +8,10 @@ using System.Windows.Media.Imaging;
 
 namespace Engine
 {
-    public abstract class ControllableMovingObject : PhysicalObject
+    public abstract class ControllableMovingObject : SimpleMovingObject
     {
         public ControllableMovingObject(BitmapFrame aBitmapFrame, double aWidth, double aHeight, Point aPosition, List<Key> aKeys)
-            : base(aBitmapFrame, aWidth, aHeight, aPosition)
+            : base(aBitmapFrame, aWidth, aHeight, aPosition, 0, 0)
         {
             mKeys = aKeys;
         }

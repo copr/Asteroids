@@ -60,9 +60,10 @@ namespace GameTest2
             CollisionMask.Add(new Circle(10, Position, 28, 135));
             CollisionMask.Add(new Circle(10, Position, 28, -135));
 
-
             CollisionMask.Add(new Circle(6, Position, 44, 145));
             CollisionMask.Add(new Circle(6, Position, 44, -145));
+            
+            //CollisionMask.Add(new Ray(Position, 0, 0, 256, 0));
             
             Depth = 0;
         }
@@ -148,26 +149,26 @@ namespace GameTest2
             Score++;
             //Rotation
             mAngle += mAngleChangeSign * cAngleChangeSpeed;
-            SetImageAngle(mAngle);
 
             //Translation
             mVerticalSpeed += mAcceleration * mAccelerationSign * Math.Sin(mAngle * Math.PI / 180);
             mHorizontalSpeed += mAcceleration * mAccelerationSign * Math.Cos(mAngle * Math.PI / 180);
 
-            double lTotalSpeed = Math.Sqrt(mHorizontalSpeed * mHorizontalSpeed + mVerticalSpeed * mVerticalSpeed);
+            //property speed calculates current speed from hor and ver speeds
+            double lTotalSpeed = Speed;
             if (lTotalSpeed > mMaxSpeed)
             {
                 mVerticalSpeed *= mMaxSpeed / lTotalSpeed;
                 mHorizontalSpeed *= mMaxSpeed / lTotalSpeed;
             }
 
-            if (lTotalSpeed < mAcceleration / 2)
+            if (lTotalSpeed < 2 * mAcceleration / 3.0)
             {
                 mVerticalSpeed = 0;
                 mHorizontalSpeed = 0;
             }
 
-            Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
+            //Position = new Point(Position.X + mHorizontalSpeed, Position.Y + mVerticalSpeed);
 
             //Shooting
             mPrimaryGun.Position = this.Position;
@@ -249,8 +250,8 @@ namespace GameTest2
         private double cAngleChangeSpeed = 5;
         private double mAngleChangeSign = 0;
 
-        private double mHorizontalSpeed = 0;
-        private double mVerticalSpeed = 0;
+        //private double mHorizontalSpeed = 0;
+        //private double mVerticalSpeed = 0;
         private double mAcceleration = .2;
         private double mAccelerationSign = 0;
         private double mMaxSpeed = 8;

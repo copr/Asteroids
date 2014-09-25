@@ -33,7 +33,6 @@ namespace GameTest2
 
         public override void ClockTick()
         {
-            SetImageAngle(Direction);
             if (mTarget != null)
             {
                 double lDirectionToTarget = 180 / Math.PI * Math.Atan2(mTarget.Position.Y - this.Position.Y, mTarget.Position.X - this.Position.X);

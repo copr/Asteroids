@@ -50,6 +50,7 @@
     <Compile Include="CollisionMasks\Circle.cs" />
     <Compile Include="CollisionMasks\CollisionMask.cs" />
     <Compile Include="CollisionMasks\ERotateBehavior.cs" />
+    <Compile Include="CollisionMasks\Ray.cs" />
     <Compile Include="ControllableMovingObject.cs" />
     <Compile Include="EControlAction.cs" />
     <Compile Include="EOutsideRoomAction.cs" />

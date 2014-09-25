@@ -20,7 +20,6 @@ namespace GameTest2
             AsteroidSettings aSettings)
             : base(aSettings.Size, aSettings.Size, aBitmapFrame, aPosition, aDirection, aSpeed)
         {
-            SetImageAngle(Direction);
             mHealth = 1;
             Random lRandom = new Random();
             mAngle = Direction;
@@ -34,8 +33,13 @@ namespace GameTest2
             InvincibleSteps = 20;
 
             mSettings = aSettings;
-
-            CollisionMask.Add(new Circle(mSettings.Size / 2 * 4.5 / 5, this.Position, 0, 0)); 
+            
+            double lRadius = mSettings.Size / 2 * 4.5 / 5;
+            //Circle mask
+            CollisionMask.Add(new Circle(lRadius, this.Position, 0, 0)); 
+            //Line mask
+            //CollisionMask.Add(new Ray(this.Position, -lRadius, 0, 2 * lRadius, 0));
+            //CollisionMask.Add(new Ray(this.Position, -lRadius, 90, 2 * lRadius, 90));
             Depth = -1;
         }
 
@@ -71,7 +75,6 @@ namespace GameTest2
         public override void ClockTick()
         {
             mAngle += mSettings.RotationSpeed;
-            SetImageAngle(mAngle);
 
             base.ClockTick();
         }

@@ -45,6 +45,7 @@ namespace GameTest2
             mExplosionBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion"];
             mExplosion2BitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Explosion2"];
             mMissileBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["Missile"];
+            mRedSquareBitmapFrame = (BitmapFrame)Resources.MergedDictionaries[0]["RedSquare"];
 
             mGameRoom.ControlActionEvent += InvokeAction;
 
@@ -358,6 +359,7 @@ namespace GameTest2
         private BitmapFrame mExplosionBitmapFrame;
         private BitmapFrame mExplosion2BitmapFrame;
         private BitmapFrame mMissileBitmapFrame;
+        private BitmapFrame mRedSquareBitmapFrame;
 
         private Rocket mRocket;
         private AsteroidGenerator mAsteroidGenerator;
